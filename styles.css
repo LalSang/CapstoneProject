@@ -1,37 +1,111 @@
 /* Global Styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: Arial, sans-serif;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+  font-family: Arial, sans-serif;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* Header Styles */
 header {
-    width: 100%;
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-bottom: 1px solid #dee2e6;
+  width: 100%;
+
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+header h1 {
+  background-color: #312929;
+  color: #f5f5dc;
+  padding: 15px 30px;
+  border-radius: 200px;
+  font-family: "Poppins", "Helvetica Neue", "Arial", sans-serif;
+  font-weight: 300;
+  margin: 0;
+  text-shadow:
+    0 0 8px rgba(255, 255, 240, 0.539),
+    0 0 12px rgba(253, 255, 240, 0.571);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(7 / 7 * 100%);
+  font-size: clamp(1.2rem, 3vw, 2rem);
 }
 
 /* Main Content Styles */
 main {
-    width: 100%;
-    flex: 1;
-    padding: 20px;
-    background-color: #ffffff;
+  width: 100%;
+  flex: 1;
+  padding: 20px;
+  background-color: #ffffff;
 }
 
 /* Footer Styles */
 footer {
-    width: 100%;
-    background-color: #f8f9fa;
-    padding: 20px;
-    border-top: 1px solid #dee2e6;
+  width: 100%;
+  background-color: #f8f9fa;
+  padding: 20px;
+  border-top: 1px solid #dee2e6;
+}
+
+/* Login Form Styles */
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60vh;
+}
+
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  width: 300px;
+}
+
+.login-subtitle {
+  text-align: center;
+  color: #666;
+  font-family: "Poppins", "Helvetica Neue", "Arial", sans-serif;
+  font-size: 14px;
+  font-weight: 300;
+  margin: 10px;
+}
+
+.login-input {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: "Poppins", "Helvetica Neue", "Arial", sans-serif;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.login-input:focus {
+  border-color: #333333;
+}
+
+.login-button {
+  padding: 15px;
+  background-color: #333333;
+  color: #f5f5dc;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-family: "Poppins", "Helvetica Neue", "Arial", sans-serif;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.login-button:hover {
+  background-color: #555555;
 }
