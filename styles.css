@@ -96,6 +96,10 @@ main {
   justify-content: center;
   align-items: center;
   border-right: 1px solid #999;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
 }
 
 .header-section:first-child {
@@ -112,6 +116,11 @@ main {
   font-weight: 300;
   font-size: 1.2rem;
   margin: 0;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  cursor: pointer;
 }
 
 /* Content Container Grid */

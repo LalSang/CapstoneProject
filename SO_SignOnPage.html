@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign In/Sign On Landing</title>
     <link rel="stylesheet" href="styles.css" />
-    <script src="app-state-quotes.js"></script>
+    <script src="actions.js"></script>
   </head>
   <body>
     <header>
@@ -29,40 +29,16 @@
             class="login-input"
             required
           />
-          <button type="submit" class="login-button universal-hover poppins-font">Login</button>
+          <button
+            type="submit"
+            class="login-button universal-hover poppins-font"
+          >
+            Login
+          </button>
         </form>
       </div>
     </main>
 
     <footer></footer>
-
-    <script>
-      document
-        .querySelector(".login-form")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-
-          // Get the input values
-          const username = document.querySelector("#username").value;
-          const password = document.querySelector(
-            'input[type="password"]',
-          ).value;
-
-          // Validate username and password
-          if (!username.trim() || !password.trim()) {
-            alert("Please enter both username and password");
-            return;
-          }
-
-          // Check if username ends with @appstate.edu (case insensitive)
-          if (!username.toLowerCase().endsWith("@appstate.edu")) {
-            alert("Username must end with @appstate.edu");
-            return;
-          }
-
-          // If all validations pass, redirect to dashboard
-          window.location.href = "StudyOverDashBoard.html";
-        });
-    </script>
   </body>
 </html>

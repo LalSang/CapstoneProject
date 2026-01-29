@@ -92,5 +92,83 @@ function initializeAppStateFooter() {
   }
 }
 
+// H1 Navigation functionality
+function initializeH1Navigation() {
+  const h1Element = document.querySelector('header h1');
+  if (h1Element) {
+    // Add cursor pointer style and hover effect
+    h1Element.style.cursor = 'pointer';
+    h1Element.classList.add('universal-hover');
+    
+    // Add click event listener to redirect to dashboard
+    h1Element.addEventListener('click', function() {
+      window.location.href = 'StudyOverDashBoard.html';
+    });
+  }
+}
+
+// Header sections navigation functionality
+function initializeHeaderNavigation() {
+  const headerSections = document.querySelectorAll('.header-section');
+  
+  headerSections.forEach((section, index) => {
+    const headerText = section.querySelector('h3');
+    if (headerText) {
+      const text = headerText.textContent.trim();
+      
+      // Add click event listener based on section content
+      section.addEventListener('click', function() {
+        switch(text) {
+          case 'My Sessions':
+            window.location.href = 'SO_YourSessions.html';
+            break;
+          case 'Browse Sessions':
+            window.location.href = 'SO_BrowseSessions.html';
+            break;
+          case 'Create Post':
+            window.location.href = 'SO_CreateNewPost.html';
+            break;
+          default:
+            console.log('Unknown header section clicked:', text);
+        }
+      });
+    }
+  });
+}
+
+// Login form functionality
+function initializeLoginForm() {
+  const loginForm = document.querySelector('.login-form');
+  if (loginForm) {
+    loginForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      // Get the input values
+      const username = document.querySelector('#username').value;
+      const password = document.querySelector('input[type="password"]').value;
+
+      // Validate username and password
+      if (!username.trim() || !password.trim()) {
+        alert('Please enter both username and password');
+        return;
+      }
+
+      // Check if username ends with @appstate.edu (case insensitive)
+      if (!username.toLowerCase().endsWith('@appstate.edu')) {
+        alert('Username must end with @appstate.edu');
+        return;
+      }
+
+      // If all validations pass, redirect to dashboard
+      window.location.href = 'StudyOverDashBoard.html';
+    });
+  }
+}
+
 // Auto-initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', initializeAppStateFooter);
+document.addEventListener('DOMContentLoaded', function() {
+  initializeAppStateFooter();
+  initializeH1Navigation();
+  initializeHeaderNavigation();
+  initializeLoginForm();
+});
