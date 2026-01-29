@@ -16,7 +16,7 @@ const appStateContent = [
   "🏫 App State was founded in 1899 and has been fostering Mountaineer excellence for over 125 years!",
   "🎯 'The future belongs to those who believe in the beauty of their dreams.' - Eleanor Roosevelt",
   "❄️ Boone Fact: We're one of the few universities where you might need a winter coat in April!",
-  "🌱 'Growth begins at the end of your comfort zone.' - Anonymous",
+  "🌱 Growth begins at the end of your comfort zone.",
   "🏔️ App State's motto 'Esse Quam Videri' means 'To Be Rather Than To Seem' - authenticity matters here!",
   "💎 'What lies behind us and what lies before us are tiny matters compared to what lies within us.' - Ralph Waldo Emerson",
   "🎵 Did you know? Our fight song 'Hi Hi Yikas' has been energizing Mountaineers since the early 1900s!"
