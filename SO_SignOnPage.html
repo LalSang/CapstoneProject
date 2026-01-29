@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In/Sign On Landing</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <h1>Welcome to Appalahian State Study Buddy</h1>
+    </header>
+
+    <main>
+      <div class="login-container">
+        <form class="login-form">
+          <p class="login-subtitle">Please use your university credentials</p>
+          <input
+            type="text"
+            placeholder="Username"
+            class="login-input"
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            class="login-input"
+            required
+          />
+          <button type="submit" class="login-button">Login</button>
+        </form>
+      </div>
+    </main>
+
+    <footer>
+      <p>Footer Content</p>
+    </footer>
+
+    <script>
+      document
+        .querySelector(".login-form")
+        .addEventListener("submit", function (e) {
+          e.preventDefault();
+
+          // Get the input values
+          const username = document.querySelector('input[type="text"]').value;
+          const password = document.querySelector(
+            'input[type="password"]',
+          ).value;
+
+          // Basic validation
+          if (username.trim() && password.trim()) {
+            // Redirect to dashboard
+            window.location.href = "StudyBuddyDashBoard.html";
+          } else {
+            alert("Please enter both username and password");
+          }
+        });
+    </script>
+  </body>
+</html>
