@@ -5,10 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sign In/Sign On Landing</title>
     <link rel="stylesheet" href="styles.css" />
+    <script src="actions.js"></script>
   </head>
   <body>
     <header>
-      <h1>Welcome to Appalahian State Study Buddy</h1>
+      <h1>Welcome to Appalahian State Study Over</h1>
     </header>
 
     <main>
@@ -17,6 +18,7 @@
           <p class="login-subtitle">Please use your university credentials</p>
           <input
             type="text"
+            id="username"
             placeholder="Username"
             class="login-input"
             required
@@ -27,35 +29,16 @@
             class="login-input"
             required
           />
-          <button type="submit" class="login-button">Login</button>
+          <button
+            type="submit"
+            class="login-button universal-hover poppins-font"
+          >
+            Login
+          </button>
         </form>
       </div>
     </main>
 
-    <footer>
-      <p>Footer Content</p>
-    </footer>
-
-    <script>
-      document
-        .querySelector(".login-form")
-        .addEventListener("submit", function (e) {
-          e.preventDefault();
-
-          // Get the input values
-          const username = document.querySelector('input[type="text"]').value;
-          const password = document.querySelector(
-            'input[type="password"]',
-          ).value;
-
-          // Basic validation
-          if (username.trim() && password.trim()) {
-            // Redirect to dashboard
-            window.location.href = "StudyBuddyDashBoard.html";
-          } else {
-            alert("Please enter both username and password");
-          }
-        });
-    </script>
+    <footer></footer>
   </body>
 </html>
