@@ -57,7 +57,13 @@
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-starter-web</artifactId>
 			</dependency>
-	</dependencies>
+	
+   <dependency>
+     <groupId>com.h2database</groupId>
+     <artifactId>h2</artifactId>
+     <version>1.4.199</version>
+   </dependency>
+ </dependencies>
 	<build>
 		<plugins>
 			<plugin>
