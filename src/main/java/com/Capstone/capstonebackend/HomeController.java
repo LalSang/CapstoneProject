@@ -35,6 +35,11 @@ public class HomeController {
         return "redirect:/StudyOverDashBoard.html";
     }
 
+    @GetMapping("/join-session")
+    public String joinSession() {
+        return "redirect:/SO_RSVPConfrimation.html";
+    }
+
     /*
      * @PostMapping("/login")
      * public String login(

@@ -470,6 +470,168 @@ footer {
   z-index: 1;
 }
 
+/* Sessions Grid Layout */
+.sessions-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+  padding: 20px 0;
+  width: 100%;
+}
+
+/* Session Card Styles */
+.session-card {
+  background: linear-gradient(145deg, #faf8f3 0%, #f4f1e8 100%);
+  border: 2px solid #d4af8c;
+  border-radius: 18px;
+  padding: 24px;
+  box-shadow:
+    0 8px 20px rgba(101, 67, 33, 0.12),
+    inset 0 1px 0 rgba(255, 248, 230, 0.8);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+  min-height: 280px;
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.session-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    #8b4513 0%,
+    #228b22 25%,
+    #d4af8c 50%,
+    #228b22 75%,
+    #8b4513 100%
+  );
+  border-radius: 18px 18px 0 0;
+}
+
+.session-card:hover {
+  transform: translateY(-4px);
+  box-shadow:
+    0 12px 28px rgba(101, 67, 33, 0.18),
+    inset 0 1px 0 rgba(255, 248, 230, 0.9);
+  border-color: #c49b6b;
+}
+
+/* Session Header */
+.session-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.session-header h4 {
+  color: #5d4e37;
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin: 0;
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+  flex: 1;
+  min-width: 150px;
+  font-family: "Poppins", sans-serif;
+}
+
+.course-tag {
+  background: linear-gradient(135deg, #8b4513 0%, #a0522d 100%);
+  color: #fff8e7;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(139, 69, 19, 0.3);
+  white-space: nowrap;
+  font-family: "Arial", sans-serif;
+}
+
+/* Session Details */
+.session-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.detail-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: #5d4e37;
+  font-size: 1.05rem;
+  padding: 8px 12px;
+  background: linear-gradient(135deg, #fff8f0 0%, #f9f6f0 100%);
+  border-radius: 10px;
+  border: 1px solid #e6d7c3;
+  box-shadow: inset 0 1px 3px rgba(139, 69, 19, 0.05);
+  font-family: "Arial", sans-serif;
+}
+
+.detail-item .icon {
+  font-size: 1.2rem;
+  min-width: 24px;
+  text-align: center;
+}
+
+.detail-item span:last-child {
+  font-weight: 500;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.8);
+}
+
+/* Session Footer */
+.session-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: auto;
+}
+
+.join-btn {
+  background: linear-gradient(135deg, #228b22 0%, #32cd32 50%, #228b22 100%);
+  color: #ffffff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 25px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 4px 12px rgba(34, 139, 34, 0.25),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  transform: perspective(100px) rotateX(5deg);
+  font-family: "Poppins", sans-serif;
+}
+
+.join-btn:hover {
+  background: linear-gradient(135deg, #32cd32 0%, #40e040 50%, #32cd32 100%);
+  transform: perspective(100px) rotateX(0deg) translateY(-2px);
+  box-shadow:
+    0 6px 16px rgba(34, 139, 34, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.join-btn:active {
+  transform: perspective(100px) rotateX(8deg) translateY(1px);
+  box-shadow:
+    0 2px 8px rgba(34, 139, 34, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
   .filter-controls-section {
@@ -493,5 +655,52 @@ footer {
 
   .filter-header-section h3 {
     font-size: 1.5rem;
+  }
+
+  .sessions-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 15px 0;
+  }
+
+  .session-card {
+    padding: 20px;
+    min-height: 260px;
+  }
+
+  .session-header h4 {
+    font-size: 1.2rem;
+  }
+
+  .course-tag {
+    font-size: 0.8rem;
+    padding: 5px 12px;
+  }
+
+  .detail-item {
+    font-size: 1rem;
+    padding: 6px 10px;
+  }
+
+  .join-btn {
+    padding: 10px 24px;
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .sessions-main-box {
+    margin: 5px;
+    padding: 15px;
+  }
+
+  .session-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .course-tag {
+    align-self: flex-start;
   }
 }
