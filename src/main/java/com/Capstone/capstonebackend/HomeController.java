@@ -40,29 +40,39 @@ public class HomeController {
         return "redirect:/SO_RSVPConfrimation.html";
     }
 
-    /*
-     * @PostMapping("/login")
-     * public String login(
-     * 
-     * @RequestParam String username,
-     * 
-     * @RequestParam String password,
-     * HttpSession session
-     * ) {
-     * 
-     * if (!username.toLowerCase().endsWith("@appstate.edu")) {
-     * return "redirect:/SO_SignOnPage.html?error=true";
-     * }
-     * 
-     * // Store email in session
-     * session.setAttribute("userEmail", username);
-     * 
-     * return "redirect:/SO_DashBoard.html";
-     * }
-     * 
-     * 
-     * 
-     * 
-     */
+    @GetMapping("/create-post")
+    public String createPost() {
+        return "redirect:/SO_CreateNewPost.html";
+    }
+
+    @GetMapping("/browse-sessions")
+    public String browseSessions() {
+        return "redirect:/SO_BrowseSessions.html";
+    }
+
+/*
+ * @PostMapping("/login")
+ * public String login(
+ * 
+ * @RequestParam String username,
+ * 
+ * @RequestParam String password,
+ * HttpSession session
+ * ) {
+ * 
+ * if (!username.toLowerCase().endsWith("@appstate.edu")) {
+ * return "redirect:/SO_SignOnPage.html?error=true";
+ * }
+ * 
+ * // Store email in session
+ * session.setAttribute("userEmail", username);
+ * 
+ * return "redirect:/SO_DashBoard.html";
+ * }
+ * 
+ * 
+ * 
+ * 
+ */
 
 }

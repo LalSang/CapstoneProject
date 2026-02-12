@@ -123,10 +123,10 @@ function initializeHeaderNavigation() {
             window.location.href = 'SO_YourSessions.html';
             break;
           case 'Browse Sessions':
-            window.location.href = 'SO_BrowseSessions.html';
+            window.location.href = '/browse-sessions';
             break;
           case 'Create Post':
-            window.location.href = 'SO_CreateNewPost.html';
+            window.location.href = '/create-post';
             break;
           default:
             console.log('Unknown header section clicked:', text);
@@ -190,6 +190,23 @@ function initializeJoinSessionButtons() {
   });
 }
 
+function initializeDashboardButtons() {
+  const createPostCard = document.querySelector('.small-boxes.left');
+  const browseSessionsCard = document.querySelector('.small-boxes.right');
+
+  if (createPostCard) {
+    createPostCard.addEventListener('click', function() {
+      window.location.href = '/create-post';
+    });
+  }
+
+  if (browseSessionsCard) {
+    browseSessionsCard.addEventListener('click', function() {
+      window.location.href = '/browse-sessions';
+    });
+  }
+}
+
 // Auto-initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
   initializeAppStateFooter();
@@ -197,4 +214,5 @@ document.addEventListener('DOMContentLoaded', function() {
   initializeHeaderNavigation();
   initializeLoginForm();
   initializeJoinSessionButtons();
+  initializeDashboardButtons();
 });
