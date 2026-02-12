@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>RSVP Confirmed</title>
+    <title>My Account - Profile Settings</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="actions.js"></script>
   </head>
@@ -26,8 +26,308 @@
         </div>
       </div>
 
-      <h2>Main Body Content</h2>
-      <p>Your dashboard content goes here.</p>
+      <!-- Account Settings Main Container -->
+      <div class="sessions-main-box">
+        <!-- Header Section -->
+        <div class="filter-header-section">
+          <h3>My Account & Preferences</h3>
+        </div>
+
+        <!-- Account Settings Form -->
+        <form id="account-settings-form" class="create-post-form">
+          <!-- Profile Information Section -->
+          <div class="form-section">
+            <h4>Profile Information</h4>
+            <div class="profile-display-section">
+              <div class="large-profile-container">
+                <div class="large-profile-pic">
+                  <div class="default-avatar">🏔️</div>
+                </div>
+                <button type="button" class="btn-secondary profile-btn">
+                  Change Picture
+                </button>
+              </div>
+
+              <div class="profile-fields-container">
+                <!-- Read-only Account Information -->
+                <div class="account-info-section">
+                  <h5>
+                    Official App State Information
+                    <span class="readonly-badge">(Read Only)</span>
+                  </h5>
+
+                  <div class="form-group">
+                    <label for="first-name">First Name</label>
+                    <input
+                      type="text"
+                      id="first-name"
+                      name="first-name"
+                      value="John"
+                      readonly
+                      class="readonly-input"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="last-name">Last Name</label>
+                    <input
+                      type="text"
+                      id="last-name"
+                      name="last-name"
+                      value="Doe"
+                      readonly
+                      class="readonly-input"
+                    />
+                  </div>
+
+                  <div class="form-group">
+                    <label for="app-state-email">App State Email</label>
+                    <input
+                      type="email"
+                      id="app-state-email"
+                      name="app-state-email"
+                      value="doejm@appstate.edu"
+                      readonly
+                      class="readonly-input"
+                    />
+                  </div>
+                </div>
+
+                <!-- Editable Personal Information -->
+                <div class="personal-info-section">
+                  <h5>
+                    Personal Preferences
+                    <span class="editable-badge">(Editable)</span>
+                  </h5>
+
+                  <div class="form-group">
+                    <label for="preferred-name">Preferred Name</label>
+                    <input
+                      type="text"
+                      id="preferred-name"
+                      name="preferred-name"
+                      placeholder="How you'd like others to see your name"
+                      value="Johnny"
+                    />
+                    <small class="help-text"
+                      >This is how your name will appear in study
+                      sessions</small
+                    >
+                  </div>
+
+                  <div class="form-group">
+                    <label for="secondary-email">Secondary Email</label>
+                    <input
+                      type="email"
+                      id="secondary-email"
+                      name="secondary-email"
+                      placeholder="Optional: for backup notifications"
+                      value="john.doe@gmail.com"
+                    />
+                    <small class="help-text"
+                      >Receive notifications at this email as well</small
+                    >
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Study Preferences -->
+          <div class="form-section">
+            <h4>Study Preferences</h4>
+            <div class="preferences-grid">
+              <div class="form-group">
+                <label for="preferred-subjects">Preferred Subjects</label>
+                <select
+                  id="preferred-subjects"
+                  name="preferred-subjects"
+                  multiple
+                  size="5"
+                >
+                  <option value="computer-science" selected>
+                    Computer Science
+                  </option>
+                  <option value="mathematics">Mathematics</option>
+                  <option value="physics">Physics</option>
+                  <option value="chemistry">Chemistry</option>
+                  <option value="biology">Biology</option>
+                  <option value="english">English</option>
+                  <option value="history">History</option>
+                  <option value="psychology">Psychology</option>
+                  <option value="business">Business</option>
+                  <option value="engineering">Engineering</option>
+                </select>
+                <small class="help-text"
+                  >Hold Ctrl/Cmd to select multiple subjects for personalized
+                  recommendations</small
+                >
+              </div>
+
+              <div class="form-group">
+                <label for="study-times">Preferred Study Times</label>
+                <select id="study-times" name="study-times">
+                  <option value="morning">Morning Person (8 AM - 12 PM)</option>
+                  <option value="afternoon" selected>
+                    Afternoon (12 PM - 5 PM)
+                  </option>
+                  <option value="evening">Evening (5 PM - 9 PM)</option>
+                  <option value="night">Night Owl (9 PM - 12 AM)</option>
+                  <option value="flexible">Flexible</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="study-location">Preferred Study Locations</label>
+                <select id="study-location" name="study-location">
+                  <option value="library" selected>Belk Library</option>
+                  <option value="student-union">Student Union</option>
+                  <option value="academic-buildings">Academic Buildings</option>
+                  <option value="online">Online</option>
+                  <option value="outdoor">Outdoor Spaces</option>
+                  <option value="no-preference">No Preference</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="group-size">Preferred Group Size</label>
+                <select id="group-size" name="group-size">
+                  <option value="small" selected>Small (2-4 people)</option>
+                  <option value="medium">Medium (5-8 people)</option>
+                  <option value="large">Large (9+ people)</option>
+                  <option value="no-preference">No Preference</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Notification Settings -->
+          <div class="form-section">
+            <h4>Notification Settings</h4>
+            <div class="notification-layout">
+              <div class="notification-group">
+                <h5>Email Notifications</h5>
+
+                <div class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    id="email-new-sessions"
+                    name="email-new-sessions"
+                    checked
+                  />
+                  <label for="email-new-sessions"
+                    >New sessions in my preferred subjects</label
+                  >
+                </div>
+
+                <div class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    id="email-session-updates"
+                    name="email-session-updates"
+                    checked
+                  />
+                  <label for="email-session-updates"
+                    >Updates to my joined sessions</label
+                  >
+                </div>
+
+                <div class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    id="email-reminders"
+                    name="email-reminders"
+                    checked
+                  />
+                  <label for="email-reminders"
+                    >Session reminders (24hrs & 1hr before)</label
+                  >
+                </div>
+
+                <div class="checkbox-item">
+                  <input
+                    type="checkbox"
+                    id="email-weekly-digest"
+                    name="email-weekly-digest"
+                  />
+                  <label for="email-weekly-digest"
+                    >Weekly activity digest</label
+                  >
+                </div>
+              </div>
+
+              <div class="notification-group">
+                <h5>Privacy Settings</h5>
+
+                <div class="radio-item">
+                  <input
+                    type="radio"
+                    id="visibility-public"
+                    name="profile-visibility"
+                    value="public"
+                    checked
+                  />
+                  <label for="visibility-public"
+                    >Public - Anyone can see my profile and invite me</label
+                  >
+                </div>
+
+                <div class="radio-item">
+                  <input
+                    type="radio"
+                    id="visibility-friends"
+                    name="profile-visibility"
+                    value="friends"
+                  />
+                  <label for="visibility-friends"
+                    >Friends Only - Only people I've studied with</label
+                  >
+                </div>
+
+                <div class="radio-item">
+                  <input
+                    type="radio"
+                    id="visibility-private"
+                    name="profile-visibility"
+                    value="private"
+                  />
+                  <label for="visibility-private"
+                    >Private - I'll join sessions manually</label
+                  >
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Account Actions -->
+          <div class="form-section">
+            <h4>Account Actions</h4>
+            <div class="account-actions">
+              <div class="action-group">
+                <h5>Security</h5>
+                <button type="button" class="btn-secondary">
+                  Change Password
+                </button>
+              </div>
+
+              <div class="action-group danger-zone">
+                <h5>Danger Zone</h5>
+                <button type="button" class="btn-danger">Delete Account</button>
+                <small class="help-text"
+                  >This action cannot be undone. All your data will be
+                  permanently deleted.</small
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions hidden-until-changed">
+            <button type="button" class="btn-secondary">Cancel Changes</button>
+            <button type="submit" class="btn-primary">Save All Settings</button>
+          </div>
+        </form>
+      </div>
     </main>
 
     <footer></footer>

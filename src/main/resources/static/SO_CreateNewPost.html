@@ -26,8 +26,174 @@
         </div>
       </div>
 
-      <h2>Create Your Study Post</h2>
-      <p>Post creation form will go here.</p>
+      <!-- Create Post Main Container -->
+      <div class="sessions-main-box">
+        <!-- Header Section -->
+        <div class="filter-header-section">
+          <h3>Create Your Study Session</h3>
+        </div>
+
+        <!-- Create Post Form -->
+        <form id="create-post-form" class="create-post-form">
+          <!-- User Profile Section -->
+          <div class="form-section">
+            <h4>Your Profile</h4>
+            <div class="profile-section">
+              <div class="profile-pic-container">
+                <div class="profile-pic">👤</div>
+                <label for="user-name" class="profile-label">Your Name</label>
+                <input
+                  type="text"
+                  id="user-name"
+                  name="user-name"
+                  placeholder="Enter your name"
+                  required
+                />
+              </div>
+            </div>
+          </div>
+
+          <!-- Topic and Course Selection -->
+          <div class="form-section">
+            <h4>Subject Information</h4>
+            <div class="course-selection">
+              <div class="form-group">
+                <label for="topic-select">Topic</label>
+                <select id="topic-select" name="topic" required>
+                  <option value="">Select a topic</option>
+                  <option value="computer-science">Computer Science</option>
+                  <option value="mathematics">Mathematics</option>
+                  <option value="physics">Physics</option>
+                  <option value="chemistry">Chemistry</option>
+                  <option value="biology">Biology</option>
+                  <option value="english">English</option>
+                  <option value="history">History</option>
+                  <option value="psychology">Psychology</option>
+                  <option value="business">Business</option>
+                  <option value="engineering">Engineering</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="course-code">Course Code</label>
+                <input
+                  type="text"
+                  id="course-code"
+                  name="course-code"
+                  placeholder="e.g., CS_1440, Java 1, MATH_1120"
+                  required
+                />
+                <small class="help-text"
+                  >Enter the specific course number or name</small
+                >
+              </div>
+            </div>
+          </div>
+
+          <!-- Session Details -->
+          <div class="form-section">
+            <h4>Session Details</h4>
+            <div class="session-details-grid">
+              <div class="form-group">
+                <label for="session-title">Session Title</label>
+                <input
+                  type="text"
+                  id="session-title"
+                  name="session-title"
+                  placeholder="e.g., Data Structures Study Group"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="session-date">Date</label>
+                <input
+                  type="date"
+                  id="session-date"
+                  name="session-date"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="session-time">Time</label>
+                <input
+                  type="time"
+                  id="session-time"
+                  name="session-time"
+                  required
+                />
+              </div>
+
+              <div class="form-group">
+                <label for="session-location">Meeting Location</label>
+                <select id="session-location" name="session-location" required>
+                  <option value="">Choose location</option>
+                  <option value="belk-library">Belk Library</option>
+                  <option value="student-union">Student Union</option>
+                  <option value="walker-hall">Walker Hall</option>
+                  <option value="rankin-science">
+                    Rankin Science Building
+                  </option>
+                  <option value="anne-belk-hall">Anne Belk Hall</option>
+                  <option value="online-zoom">Online (Zoom)</option>
+                  <option value="outdoor-space">Outdoor Space</option>
+                  <option value="other">Other (Specify in details)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="max-participants">Max Participants</label>
+                <select id="max-participants" name="max-participants" required>
+                  <option value="">Choose size</option>
+                  <option value="2-4">Small (2-4 people)</option>
+                  <option value="5-8">Medium (5-8 people)</option>
+                  <option value="9-15">Large (9-15 people)</option>
+                  <option value="15+">Extra Large (15+ people)</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="difficulty-level">Difficulty Level</label>
+                <select id="difficulty-level" name="difficulty-level" required>
+                  <option value="">Select difficulty</option>
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                  <option value="mixed">Mixed Levels</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comments and Additional Details -->
+          <div class="form-section">
+            <h4>Additional Information</h4>
+            <div class="form-group full-width">
+              <label for="session-description">Description & Comments</label>
+              <textarea
+                id="session-description"
+                name="session-description"
+                rows="6"
+                placeholder="Provide details about what you'll be studying, what materials to bring, your study goals, any prerequisites, or special instructions for the meeting location..."
+                required
+              ></textarea>
+              <small class="help-text"
+                >Minimum 50 characters. Help others understand what to
+                expect!</small
+              >
+            </div>
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn-secondary">Save as Draft</button>
+            <button type="submit" class="btn-primary">
+              Create Study Session
+            </button>
+          </div>
+        </form>
+      </div>
     </main>
 
     <footer></footer>
