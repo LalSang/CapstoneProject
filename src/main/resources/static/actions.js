@@ -139,28 +139,40 @@ function initializeHeaderNavigation() {
 // Login form functionality
 function initializeLoginForm() {
   const loginForm = document.querySelector('.login-form');
+  const errorLabel = document.querySelector('#login-error');
+
+  const showError = (message) => {
+    if (errorLabel) {
+      errorLabel.textContent = message;
+    }
+  };
+
+  const queryError = new URLSearchParams(window.location.search).get('error');
+  if (queryError === 'domain') {
+    showError('Only @appstate.edu emails are allowed');
+  } else if (queryError === 'missing') {
+    showError('Please enter both username and password');
+  }
+
   if (loginForm) {
     loginForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-
       // Get the input values
-      const username = document.querySelector('#username').value;
-      const password = document.querySelector('input[type="password"]').value;
+      const username = loginForm.querySelector('#username').value;
+      const password = loginForm.querySelector('input[type="password"]').value;
 
       // Validate username and password
       if (!username.trim() || !password.trim()) {
-        alert('Please enter both username and password');
+        e.preventDefault();
+        showError('Please enter both username and password');
         return;
       }
 
       // Check if username ends with @appstate.edu (case insensitive)
       if (!username.toLowerCase().endsWith('@appstate.edu')) {
-        alert('Username must end with @appstate.edu');
+        e.preventDefault();
+        showError('Username must end with @appstate.edu');
         return;
       }
-
-      // If all validations pass, redirect to dashboard
-      window.location.href = 'StudyOverDashBoard.html';
     });
   }
 }
