@@ -247,6 +247,13 @@ footer {
   margin: 10px;
 }
 
+.login-error {
+  min-height: 18px;
+  color: #b00020;
+  font-size: 14px;
+  text-align: center;
+}
+
 .login-input {
   padding: 15px;
   border: 1px solid #ddd;

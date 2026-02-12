@@ -1,10 +1,9 @@
 package com.Capstone.capstonebackend;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class HomeController {
@@ -24,11 +23,13 @@ public class HomeController {
     @PostMapping("/login")
     public String login(
             @RequestParam String username,
-            @RequestParam String password,
-            Model model) {
+            @RequestParam String password) {
+        if (password == null || password.isBlank()) {
+            return "redirect:/SO_SignOnPage.html?error=missing";
+        }
+
         if (!authProvider.isValidAppStateUser(username)) {
-            model.addAttribute("error", "Only @appstate.edu emails are allowed");
-            return "redirect:/SO_SignOnPage.html?error=true";
+            return "redirect:/SO_SignOnPage.html?error=domain";
         }
 
         return "redirect:/StudyOverDashBoard.html";
