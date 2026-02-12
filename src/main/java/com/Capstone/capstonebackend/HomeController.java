@@ -32,7 +32,7 @@ public class HomeController {
             return "redirect:/SO_SignOnPage.html?error=domain";
         }
 
-        return "redirect:/StudyOverDashBoard.html";
+        return "redirect:/SO_DashBoard.html";
     }
 
     @GetMapping("/join-session")
@@ -57,7 +57,7 @@ public class HomeController {
      * // Store email in session
      * session.setAttribute("userEmail", username);
      * 
-     * return "redirect:/StudyOverDashBoard.html";
+     * return "redirect:/SO_DashBoard.html";
      * }
      * 
      * 

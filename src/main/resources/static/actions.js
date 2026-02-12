@@ -102,7 +102,7 @@ function initializeH1Navigation() {
     
     // Add click event listener to redirect to dashboard
     h1Element.addEventListener('click', function() {
-      window.location.href = 'StudyOverDashBoard.html';
+      window.location.href = 'SO_DashBoard.html';
     });
   }
 }
