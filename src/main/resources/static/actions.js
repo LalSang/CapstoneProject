@@ -177,10 +177,24 @@ function initializeLoginForm() {
   }
 }
 
+function initializeJoinSessionButtons() {
+  const joinButtons = document.querySelectorAll('.join-btn');
+  if (!joinButtons.length) {
+    return;
+  }
+
+  joinButtons.forEach((button) => {
+    button.addEventListener('click', function() {
+      window.location.href = '/join-session';
+    });
+  });
+}
+
 // Auto-initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
   initializeAppStateFooter();
   initializeH1Navigation();
   initializeHeaderNavigation();
   initializeLoginForm();
+  initializeJoinSessionButtons();
 });
