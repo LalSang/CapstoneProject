@@ -35,4 +35,29 @@ public class HomeController {
         return "redirect:/StudyOverDashBoard.html";
     }
 
+    /*
+     * @PostMapping("/login")
+     * public String login(
+     * 
+     * @RequestParam String username,
+     * 
+     * @RequestParam String password,
+     * HttpSession session
+     * ) {
+     * 
+     * if (!username.toLowerCase().endsWith("@appstate.edu")) {
+     * return "redirect:/SO_SignOnPage.html?error=true";
+     * }
+     * 
+     * // Store email in session
+     * session.setAttribute("userEmail", username);
+     * 
+     * return "redirect:/StudyOverDashBoard.html";
+     * }
+     * 
+     * 
+     * 
+     * 
+     */
+
 }
