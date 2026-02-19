@@ -123,10 +123,10 @@ function initializeHeaderNavigation() {
             window.location.href = 'SO_YourSessions.html';
             break;
           case 'Browse Sessions':
-            window.location.href = '/browse-sessions';
+            window.location.href = 'SO_BrowseSessions.html';
             break;
           case 'Create Post':
-            window.location.href = '/create-post';
+            window.location.href = 'SO_CreateNewPost.html';
             break;
           default:
             console.log('Unknown header section clicked:', text);
@@ -190,7 +190,7 @@ function initializeJoinSessionButtons() {
 
     button.dataset.joinBound = 'true';
     button.addEventListener('click', function() {
-      window.location.href = '/join-session';
+      window.location.href = 'SO_RSVPConfrimation.html';
     });
   });
 }
@@ -366,7 +366,7 @@ function initializeCreatePostForm() {
         return;
       }
 
-      window.location.href = '/browse-sessions';
+      window.location.href = 'SO_BrowseSessions.html';
     } catch (error) {
       console.error('Unable to create session:', error);
       alert('Unable to create session right now. Try again.');
@@ -380,13 +380,13 @@ function initializeDashboardButtons() {
 
   if (createPostCard) {
     createPostCard.addEventListener('click', function() {
-      window.location.href = '/create-post';
+      window.location.href = 'SO_CreateNewPost.html';
     });
   }
 
   if (browseSessionsCard) {
     browseSessionsCard.addEventListener('click', function() {
-      window.location.href = '/browse-sessions';
+      window.location.href = 'SO_BrowseSessions.html';
     });
   }
 }

@@ -1,4 +1,133 @@
 /* ==============================================
+   RSVP CONFIRMATION PAGE STYLES
+   ============================================== */
+.rsvp-confirmation-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.rsvp-confirmation-container {
+  max-width: 500px;
+  width: 100%;
+  background: #ffffff;
+  border-radius: 20px;
+  padding: 60px 40px;
+  text-align: center;
+  box-shadow:
+    0 10px 30px rgba(0, 0, 0, 0.1),
+    0 4px 15px rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.success-icon {
+  font-size: 4rem;
+  color: #28a745;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #28a745, #20c997);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(40, 167, 69, 0.1);
+}
+
+.rsvp-confirmation-container h2 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-weight: 600;
+  font-family: "Poppins", sans-serif;
+}
+
+.confirmation-message {
+  font-size: 1.2rem;
+  color: #495057;
+  margin-bottom: 30px;
+  line-height: 1.6;
+  font-weight: 400;
+}
+
+.confirmation-details {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 15px;
+  margin-bottom: 40px;
+}
+
+.confirmation-details p {
+  color: #6c757d;
+  margin-bottom: 8px;
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.confirmation-details p:last-child {
+  margin-bottom: 0;
+}
+
+.btn-dashboard {
+  display: inline-block;
+  background: linear-gradient(135deg, #007bff 0%, #0056b3 50%, #004085 100%);
+  color: #ffffff;
+  text-decoration: none;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow:
+    0 6px 20px rgba(0, 123, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  font-family: "Poppins", sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.btn-dashboard:hover {
+  background: linear-gradient(135deg, #0056b3 0%, #004085 50%, #002752 100%);
+  transform: translateY(-3px);
+  box-shadow:
+    0 8px 25px rgba(0, 123, 255, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  text-decoration: none;
+}
+
+.btn-dashboard:active {
+  transform: translateY(-1px);
+  box-shadow:
+    0 4px 15px rgba(0, 123, 255, 0.35),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Responsive Design for RSVP Confirmation */
+@media (max-width: 768px) {
+  .rsvp-confirmation-container {
+    padding: 40px 25px;
+    margin: 0 15px;
+  }
+
+  .rsvp-confirmation-container h2 {
+    font-size: 2rem;
+  }
+
+  .confirmation-message {
+    font-size: 1.1rem;
+  }
+
+  .btn-dashboard {
+    padding: 14px 30px;
+    font-size: 1rem;
+  }
+}
+
+/* ==============================================
    GLOBAL STYLES
    ============================================== */
 * {
