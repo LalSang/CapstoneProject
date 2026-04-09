@@ -21,15 +21,15 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class HomeController {
 
     private final AppstateAuthProvider authProvider;
-    private final DatabaseAuthService databaseAuthService;
+    private final InMemoryAuthService authService;
     private final StudySessionService studySessionService;
 
     public HomeController(
             AppstateAuthProvider authProvider,
-            DatabaseAuthService databaseAuthService,
+            InMemoryAuthService authService,
             StudySessionService studySessionService) {
         this.authProvider = authProvider;
-        this.databaseAuthService = databaseAuthService;
+        this.authService = authService;
         this.studySessionService = studySessionService;
     }
 
@@ -48,7 +48,7 @@ public class HomeController {
             return "redirect:/SO_SignOnPage.html?error=missing";
         }
 
-        Optional<String> userRole = databaseAuthService.authenticate(username, password);
+        Optional<String> userRole = authService.authenticate(username, password);
         if (userRole.isEmpty()) {
             return "redirect:/SO_SignOnPage.html?error=invalid";
         }
@@ -107,7 +107,12 @@ public class HomeController {
             return "redirect:/SO_SignUpPage.html?error=domain";
         }
 
-        return "redirect:/SO_SignOnPage.html?signup=success";
+        try {
+            authService.createUser("student", email, password);
+            return "redirect:/SO_SignOnPage.html?signup=success";
+        } catch (IllegalStateException ex) {
+            return "redirect:/SO_SignUpPage.html?error=exists";
+        }
     }
 
     @GetMapping("/join-session")
@@ -177,7 +182,7 @@ public class HomeController {
         }
 
         try {
-            databaseAuthService.createUser(request.getRole(), request.getUsername(), request.getPassword());
+            authService.createUser(request.getRole(), request.getUsername(), request.getPassword());
             return ResponseEntity.status(HttpStatus.CREATED).body(Map.of("status", "created"));
         } catch (IllegalArgumentException ex) {
             return ResponseEntity.badRequest().body(Map.of("error", ex.getMessage()));
@@ -215,17 +220,17 @@ public class HomeController {
     }
 
     private String validateSessionRequest(CreateStudySessionRequest request) {
+        if (request == null) {
+            return "Session details are required.";
+        }
         if (isBlank(request.getUserName())) {
             return "Name is required.";
         }
         if (isBlank(request.getTopic())) {
-            return "Topic is required.";
+            return "Subject is required.";
         }
         if (isBlank(request.getCourseCode())) {
-            return "Course code is required.";
-        }
-        if (isBlank(request.getSessionTitle())) {
-            return "Session title is required.";
+            return "Course is required.";
         }
         if (isBlank(request.getSessionDate())) {
             return "Session date is required.";
@@ -237,16 +242,7 @@ public class HomeController {
             return "Meeting location is required.";
         }
         if (isBlank(request.getMaxParticipants())) {
-            return "Max participants is required.";
-        }
-        if (isBlank(request.getDifficultyLevel())) {
-            return "Difficulty level is required.";
-        }
-        if (isBlank(request.getSessionDescription())) {
-            return "Additional information is required.";
-        }
-        if (request.getSessionDescription().trim().length() < 50) {
-            return "Additional information must be at least 50 characters.";
+            return "Group size is required.";
         }
 
         return null;

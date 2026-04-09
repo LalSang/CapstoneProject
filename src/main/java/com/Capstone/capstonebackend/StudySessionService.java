@@ -14,19 +14,21 @@ public class StudySessionService {
     private final CopyOnWriteArrayList<StudySession> sessions = new CopyOnWriteArrayList<>();
 
     public StudySession create(CreateStudySessionRequest request, String ownerUsername) {
+        String courseCode = clean(request.getCourseCode());
+        String topic = clean(request.getTopic());
         StudySession session = new StudySession(
                 idGenerator.getAndIncrement(),
                 ownerUsername,
-                request.getUserName(),
-                request.getTopic(),
-                request.getCourseCode(),
-                request.getSessionTitle(),
-                request.getSessionDate(),
-                request.getSessionTime(),
-                request.getSessionLocation(),
-                request.getMaxParticipants(),
-                request.getDifficultyLevel(),
-                request.getSessionDescription());
+                clean(request.getUserName()),
+                topic,
+                courseCode,
+                resolveSessionTitle(request.getSessionTitle(), courseCode, topic),
+                clean(request.getSessionDate()),
+                clean(request.getSessionTime()),
+                clean(request.getSessionLocation()),
+                clean(request.getMaxParticipants()),
+                clean(request.getDifficultyLevel()),
+                clean(request.getSessionDescription()));
 
         sessions.add(session);
         return session;
@@ -44,5 +46,46 @@ public class StudySessionService {
 
     public boolean deleteById(long id) {
         return sessions.removeIf(session -> session.getId() == id);
+    }
+
+    private String resolveSessionTitle(String requestedTitle, String courseCode, String topic) {
+        String cleanedTitle = clean(requestedTitle);
+        if (!cleanedTitle.isEmpty()) {
+            return cleanedTitle;
+        }
+        if (!courseCode.isEmpty()) {
+            return courseCode + " Study Session";
+        }
+        if (!topic.isEmpty()) {
+            return humanizeTopic(topic) + " Study Session";
+        }
+        return "Study Session";
+    }
+
+    private String clean(String value) {
+        return value == null ? "" : value.trim();
+    }
+
+    private String humanizeTopic(String value) {
+        String normalized = clean(value).replace('-', ' ').replace('_', ' ');
+        if (normalized.isEmpty()) {
+            return "";
+        }
+
+        String[] words = normalized.split("\\s+");
+        StringBuilder builder = new StringBuilder();
+        for (String word : words) {
+            if (word.isEmpty()) {
+                continue;
+            }
+            if (!builder.isEmpty()) {
+                builder.append(' ');
+            }
+            builder.append(Character.toUpperCase(word.charAt(0)));
+            if (word.length() > 1) {
+                builder.append(word.substring(1).toLowerCase());
+            }
+        }
+        return builder.toString();
     }
 }
