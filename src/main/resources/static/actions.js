@@ -1,14 +1,7 @@
 const APPSTATE_CONFIG = {
   name: 'Appalachian State University',
   logoPath: 'images/AppStateLogo.png',
-  emailDomain: '@appstate.edu',
-  facts: [
-    'Boone sits high in the Blue Ridge Mountains at about 3,300 feet.',
-    'App State began in 1899 and is known for strong teaching programs.',
-    'The campus is close to outdoor trails, skiing, and mountain parks.',
-    'Boone weather can shift quickly, especially in late fall and spring.',
-    'The university motto is "Esse Quam Videri" or "To Be Rather Than To Seem".'
-  ]
+  emailDomain: '@appstate.edu'
 };
 
 let currentUserContext = null;
@@ -65,10 +58,145 @@ function hasAdminAccess() {
   return normalizeLower(currentUserContext && currentUserContext.role) === 'admin';
 }
 
-function initializeReadOnlyUsernameDisplays() {
-  const username = currentUserContext && currentUserContext.username
+function getCurrentPageSlug() {
+  const pathname = window.location.pathname || '';
+  const currentPath = pathname.split('/').pop() || 'SO_DashBoard.html';
+  return currentPath.toLowerCase();
+}
+
+function getCurrentUsername() {
+  return currentUserContext && currentUserContext.username
     ? currentUserContext.username.toString().trim()
     : '';
+}
+
+function toTitleCaseLabel(value) {
+  return value
+    ? value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()
+    : '';
+}
+
+function getDisplayUsername() {
+  const rawUsername = getCurrentUsername();
+  if (!rawUsername) {
+    return '';
+  }
+
+  return rawUsername.split('@')[0] || rawUsername;
+}
+
+function getDisplayName() {
+  const displayUsername = getDisplayUsername();
+  if (!displayUsername) {
+    return 'StudyOver User';
+  }
+
+  const nameParts = displayUsername.split(/[._-]+/).filter(Boolean);
+  if (!nameParts.length) {
+    return 'StudyOver User';
+  }
+
+  return nameParts.map(toTitleCaseLabel).join(' ');
+}
+
+function getDisplayRoleLabel() {
+  const rawRole = currentUserContext && currentUserContext.role
+    ? currentUserContext.role.toString().trim()
+    : '';
+  return rawRole ? toTitleCaseLabel(rawRole) : 'Account';
+}
+
+function getPrimaryNavigationItems() {
+  return [
+    {
+      label: 'Dashboard',
+      href: 'SO_DashBoard.html',
+      matchers: ['so_dashboard.html']
+    },
+    {
+      label: 'My Sessions',
+      href: 'SO_YourSessions.html',
+      matchers: ['so_yoursessions.html']
+    },
+    {
+      label: 'Browse Sessions',
+      href: '/browse-sessions',
+      matchers: ['so_browsesessions.html', 'browse-sessions', 'so_sessiondetails.html', 'so_rsvpconfrimation.html']
+    },
+    {
+      label: 'Create Post',
+      href: '/create-post',
+      matchers: ['so_createnewpost.html', 'create-post']
+    }
+  ];
+}
+
+function initializeOfficialSiteNavigation() {
+  const onLoginPage = Boolean(document.querySelector('form.login-form[action="/login"]'));
+  const onSignupPage = Boolean(document.querySelector('#signup-form'));
+  if (onLoginPage || onSignupPage) {
+    return;
+  }
+
+  const header = document.querySelector('header');
+  if (!header) {
+    return;
+  }
+
+  const utilityLinkIsActive = getCurrentPageSlug() === 'so_profilepage.html';
+
+  document.body.classList.add('app-shell');
+  header.innerHTML = `
+    <div class="site-header-inner">
+      <a href="SO_DashBoard.html" class="site-brand-link" aria-label="StudyOver dashboard">
+        <h1>StudyOver</h1>
+      </a>
+
+      <div class="site-header-tools">
+        <div class="site-utility-actions">
+          <a href="SO_ProfilePage.html" class="site-utility-link${utilityLinkIsActive ? ' active' : ''}">Profile</a>
+          <button type="button" class="site-utility-button site-utility-button-primary logout-btn">Log Out</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  let primaryNavigation = document.querySelector('.header-box');
+  if (!primaryNavigation) {
+    const main = document.querySelector('main');
+    if (main && !main.classList.contains('rsvp-confirmation-main')) {
+      primaryNavigation = document.createElement('nav');
+      primaryNavigation.className = 'header-box';
+      main.insertBefore(primaryNavigation, main.firstChild);
+    }
+  }
+
+  if (!primaryNavigation) {
+    return;
+  }
+
+  const currentPageSlug = getCurrentPageSlug();
+  primaryNavigation.setAttribute('role', 'navigation');
+  primaryNavigation.setAttribute('aria-label', 'Primary');
+  primaryNavigation.innerHTML = getPrimaryNavigationItems()
+    .map((item) => {
+      const isActive = item.matchers.some((matcher) => currentPageSlug.includes(matcher));
+      return `
+        <a class="header-section${isActive ? ' active' : ''}" href="${item.href}">
+          <h3>${item.label}</h3>
+        </a>
+      `;
+    })
+    .join('');
+}
+
+function initializeReadOnlyUsernameDisplays() {
+  const username = getCurrentUsername();
+  const displayUsername = getDisplayUsername();
+  const displayName = getDisplayName();
+  const displayRole = getDisplayRoleLabel();
+  const appStateEmail = toAppStateEmail(username || displayUsername);
+  const displayInitial = displayName ? displayName.charAt(0).toUpperCase() : 'S';
 
   const createPostUsernameInput = document.querySelector('#user-name');
   if (createPostUsernameInput) {
@@ -77,17 +205,41 @@ function initializeReadOnlyUsernameDisplays() {
     }
   }
 
-  const createPostDisplayUsername = document.querySelector('#create-post-display-username');
-  if (createPostDisplayUsername) {
-    createPostDisplayUsername.textContent = username;
-  }
-
   const appStateEmailInput = document.querySelector('#app-state-email');
   if (appStateEmailInput) {
-    const appStateEmail = toAppStateEmail(username);
     if (appStateEmail) {
       appStateEmailInput.value = appStateEmail;
     }
+  }
+
+  const profileUsernameInput = document.querySelector('#profile-username');
+  if (profileUsernameInput) {
+    profileUsernameInput.value = displayUsername || 'studyover-user';
+  }
+
+  const profileRoleInput = document.querySelector('#profile-role');
+  if (profileRoleInput) {
+    profileRoleInput.value = displayRole;
+  }
+
+  const profileDisplayName = document.querySelector('#profile-display-name');
+  if (profileDisplayName) {
+    profileDisplayName.textContent = displayName;
+  }
+
+  const profileDisplayEmail = document.querySelector('#profile-display-email-text');
+  if (profileDisplayEmail) {
+    profileDisplayEmail.textContent = appStateEmail || 'No campus email available';
+  }
+
+  const profileDisplayRole = document.querySelector('#profile-display-role-text');
+  if (profileDisplayRole) {
+    profileDisplayRole.textContent = `${displayRole} access`;
+  }
+
+  const profileDisplayAvatar = document.querySelector('#profile-display-avatar');
+  if (profileDisplayAvatar) {
+    profileDisplayAvatar.textContent = displayInitial;
   }
 }
 
@@ -101,67 +253,34 @@ function canDeleteSession(session) {
   return owner && currentUsername && owner === currentUsername;
 }
 
-class SchoolFooter {
-  constructor(facts) {
-    this.facts = facts;
-    this.currentIndex = 0;
-    this.displayDuration = 10000;
-    this.fadeTime = 500;
-  }
-
-  initialize(footerElement) {
-    if (!footerElement || !this.facts.length) {
-      return;
-    }
-
-    const contentContainer = document.createElement('div');
-    contentContainer.id = 'school-content';
-    contentContainer.style.cssText = `
-      transition: opacity ${this.fadeTime}ms ease-in-out;
-      min-height: 50px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-      padding: 10px;
-      font-style: italic;
-      color: #666;
-    `;
-
-    footerElement.innerHTML = '';
-    footerElement.appendChild(contentContainer);
-    this.showContent(contentContainer);
-    this.startRotation(contentContainer);
-  }
-
-  showContent(container) {
-    container.textContent = this.facts[this.currentIndex];
-    container.style.opacity = '1';
-  }
-
-  startRotation(container) {
-    setInterval(() => {
-      container.style.opacity = '0';
-      setTimeout(() => {
-        this.currentIndex = (this.currentIndex + 1) % this.facts.length;
-        this.showContent(container);
-      }, this.fadeTime);
-    }, this.displayDuration);
-  }
-}
-
 function initializeSchoolFooter() {
   const footer = document.querySelector('footer');
   if (!footer) {
     return;
   }
 
-  const schoolFooter = new SchoolFooter(APPSTATE_CONFIG.facts);
-  schoolFooter.initialize(footer);
+  const currentYear = new Date().getFullYear();
+  footer.innerHTML = `
+    <div class="site-footer-content">
+      <section class="footer-brand">
+        <h4>Appalachian StudyOver</h4>
+        <p>Connect with classmates, discover study sessions, and stay on track throughout the semester.</p>
+      </section>
+      <section class="footer-support">
+        <h5>Support</h5>
+        <a href="mailto:support@appstate.edu">support@appstate.edu</a>
+        <p>Boone, North Carolina</p>
+      </section>
+    </div>
+    <div class="site-footer-bottom">
+      <p>&copy; ${currentYear} Appalachian StudyOver. All rights reserved.</p>
+      <p class="footer-note">Built for ${APPSTATE_CONFIG.name}</p>
+    </div>
+  `;
 }
 
 function applySchoolBranding() {
-  const navTitle = 'Appalachian StudyOver';
+  const navTitle = 'StudyOver';
 
   const appHeaders = document.querySelectorAll('header h1');
   appHeaders.forEach((header) => {
@@ -205,7 +324,7 @@ function applySchoolBranding() {
 function initializeH1Navigation() {
   const h1Element = document.querySelector('header h1');
   const onSignInPage = document.querySelector('.login-form');
-  if (h1Element && !onSignInPage) {
+  if (h1Element && !onSignInPage && !h1Element.closest('.site-brand-link')) {
     h1Element.style.cursor = 'pointer';
     h1Element.classList.add('universal-hover');
 
@@ -225,6 +344,9 @@ function initializeHeaderNavigation() {
 
       section.addEventListener('click', function() {
         switch (text) {
+          case 'Dashboard':
+            window.location.href = 'SO_DashBoard.html';
+            break;
           case 'My Sessions':
             window.location.href = 'SO_YourSessions.html';
             break;
@@ -314,6 +436,8 @@ function initializeSignupActions() {
     showSignupError('Passwords do not match.');
   } else if (signupStatus === 'missing') {
     showSignupError('Please complete all required fields.');
+  } else if (signupStatus === 'exists') {
+    showSignupError('An account with that email already exists.');
   }
 
   signupForm.addEventListener('submit', function(event) {
@@ -383,6 +507,15 @@ function initializeJoinSessionButtons() {
   });
 }
 
+function setBrowseSessionsEmptyStateVisible(isVisible) {
+  const emptyState = document.querySelector('#browse-sessions-empty-state');
+  if (!emptyState) {
+    return;
+  }
+
+  emptyState.classList.toggle('hidden', !isVisible);
+}
+
 function humanizeValue(value) {
   if (!value) {
     return '';
@@ -406,6 +539,20 @@ function buildSessionCard(session) {
   const hostUsername = session && session.userName && session.userName.toString().trim()
     ? session.userName.toString().trim()
     : 'Unknown';
+  const maxParticipants = session && session.maxParticipants && session.maxParticipants.toString().trim()
+    ? session.maxParticipants.toString().trim()
+    : '';
+  const sizeLabel = maxParticipants.includes('-')
+    ? maxParticipants.replace('-', ' to ')
+    : maxParticipants;
+  const notesMarkup = session && session.sessionDescription && session.sessionDescription.toString().trim()
+    ? `
+      <div class="detail-item">
+        <span class="detail-label">Notes:</span>
+        <span>${escapeHtml(session.sessionDescription)}</span>
+      </div>
+    `
+    : '';
   const deleteButtonMarkup = canDeleteSession(session)
     ? '<button class="delete-session-btn">End Session</button>'
     : '';
@@ -427,17 +574,14 @@ function buildSessionCard(session) {
         <span>${escapeHtml(humanizeValue(session.sessionLocation))}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Group:</span>
-        <span>1/${escapeHtml(humanizeValue(session.maxParticipants))}</span>
+        <span class="detail-label">Size:</span>
+        <span>${escapeHtml(sizeLabel)} spots</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Host:</span>
         <span>${escapeHtml(hostUsername)}</span>
       </div>
-      <div class="detail-item">
-        <span class="detail-label">Details:</span>
-        <span>${escapeHtml(session.sessionDescription)}</span>
-      </div>
+      ${notesMarkup}
     </div>
     <div class="session-footer">
       ${deleteButtonMarkup}
@@ -539,13 +683,17 @@ async function loadCreatedSessions() {
   try {
     const response = await fetch('/api/sessions');
     if (!response.ok) {
+      setBrowseSessionsEmptyStateVisible(true);
       return;
     }
 
     const sessions = await response.json();
     if (!Array.isArray(sessions) || !sessions.length) {
+      setBrowseSessionsEmptyStateVisible(true);
       return;
     }
+
+    setBrowseSessionsEmptyStateVisible(false);
 
     sessions.forEach((session) => {
       const sessionCard = buildSessionCard(session);
@@ -557,6 +705,7 @@ async function loadCreatedSessions() {
     initializeDeleteSessionButtons();
   } catch (error) {
     console.error('Unable to load created sessions:', error);
+    setBrowseSessionsEmptyStateVisible(true);
   }
 }
 
@@ -564,6 +713,15 @@ function initializeCreatePostForm() {
   const createPostForm = document.querySelector('#create-post-form');
   if (!createPostForm) {
     return;
+  }
+
+  const sessionDateInput = createPostForm.querySelector('#session-date');
+  if (sessionDateInput) {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    sessionDateInput.min = `${year}-${month}-${day}`;
   }
 
   createPostForm.addEventListener('submit', async function(event) {
@@ -576,10 +734,6 @@ function initializeCreatePostForm() {
     }
 
     const sessionDescription = document.querySelector('#session-description').value.trim();
-    if (sessionDescription.length < 50) {
-      alert('Additional information must be at least 50 characters.');
-      return;
-    }
 
     const payload = {
       userName: userNameValue,
@@ -590,7 +744,7 @@ function initializeCreatePostForm() {
       sessionTime: document.querySelector('#session-time').value,
       sessionLocation: document.querySelector('#session-location').value,
       maxParticipants: document.querySelector('#max-participants').value,
-      difficultyLevel: document.querySelector('#difficulty-level').value,
+      difficultyLevel: '',
       sessionDescription: sessionDescription
     };
 
@@ -683,9 +837,150 @@ function initializeAdminControls() {
   });
 }
 
+function getProfileSettingsStorageKey() {
+  const username = normalizeLower(getDisplayUsername()) || 'guest';
+  return `studyover.profile.settings.${username}`;
+}
+
+function getProfileSettingElements(settingsForm) {
+  return Array.from(settingsForm.querySelectorAll('input, select, textarea')).filter((element) => {
+    return element.name && !element.disabled && !element.readOnly;
+  });
+}
+
+function serializeProfileSettings(settingsForm) {
+  const settings = {};
+  const processedRadioGroups = new Set();
+
+  getProfileSettingElements(settingsForm).forEach((element) => {
+    if (element.tagName === 'SELECT' && element.multiple) {
+      settings[element.name] = Array.from(element.selectedOptions).map((option) => option.value);
+      return;
+    }
+
+    if (element.type === 'checkbox') {
+      settings[element.name] = element.checked;
+      return;
+    }
+
+    if (element.type === 'radio') {
+      if (processedRadioGroups.has(element.name)) {
+        return;
+      }
+
+      const checkedOption = settingsForm.querySelector(`input[name="${element.name}"]:checked`);
+      settings[element.name] = checkedOption ? checkedOption.value : '';
+      processedRadioGroups.add(element.name);
+      return;
+    }
+
+    settings[element.name] = element.value;
+  });
+
+  return settings;
+}
+
+function applyStoredProfileSettings(settingsForm, savedSettings) {
+  const processedRadioGroups = new Set();
+
+  getProfileSettingElements(settingsForm).forEach((element) => {
+    const savedValue = savedSettings[element.name];
+    if (typeof savedValue === 'undefined') {
+      return;
+    }
+
+    if (element.tagName === 'SELECT' && element.multiple) {
+      const selectedValues = Array.isArray(savedValue) ? savedValue : [];
+      Array.from(element.options).forEach((option) => {
+        option.selected = selectedValues.includes(option.value);
+      });
+      return;
+    }
+
+    if (element.type === 'checkbox') {
+      element.checked = Boolean(savedValue);
+      return;
+    }
+
+    if (element.type === 'radio') {
+      if (processedRadioGroups.has(element.name)) {
+        return;
+      }
+
+      const radioOptions = settingsForm.querySelectorAll(`input[name="${element.name}"]`);
+      radioOptions.forEach((radioOption) => {
+        radioOption.checked = radioOption.value === savedValue;
+      });
+      processedRadioGroups.add(element.name);
+      return;
+    }
+
+    element.value = savedValue;
+  });
+}
+
+function initializeProfileSettingsForm() {
+  const settingsForm = document.querySelector('#account-settings-form');
+  if (!settingsForm) {
+    return;
+  }
+
+  const resetButton = document.querySelector('#profile-reset-button');
+  const statusLabel = document.querySelector('#account-settings-status');
+  const storageKey = getProfileSettingsStorageKey();
+
+  const showStatus = (message, color) => {
+    if (!statusLabel) {
+      return;
+    }
+
+    statusLabel.textContent = message;
+    statusLabel.style.color = color || '#1b5e20';
+  };
+
+  try {
+    const savedSettings = window.localStorage.getItem(storageKey);
+    if (savedSettings) {
+      applyStoredProfileSettings(settingsForm, JSON.parse(savedSettings));
+    }
+  } catch (error) {
+    console.error('Unable to load profile settings:', error);
+    showStatus('Unable to load saved preferences.', '#b00020');
+  }
+
+  settingsForm.addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    try {
+      const serializedSettings = serializeProfileSettings(settingsForm);
+      window.localStorage.setItem(storageKey, JSON.stringify(serializedSettings));
+      showStatus('Preferences saved on this device.', '#1b5e20');
+    } catch (error) {
+      console.error('Unable to save profile settings:', error);
+      showStatus('Unable to save preferences right now.', '#b00020');
+    }
+  });
+
+  if (resetButton) {
+    resetButton.addEventListener('click', function() {
+      settingsForm.reset();
+
+      try {
+        window.localStorage.removeItem(storageKey);
+      } catch (error) {
+        console.error('Unable to clear profile settings:', error);
+      }
+
+      showStatus('Preferences reset to defaults.', '#1b5e20');
+    });
+  }
+}
+
 function initializeDashboardButtons() {
-  const createPostCard = document.querySelector('.small-boxes.left');
-  const browseSessionsCard = document.querySelector('.small-boxes.right');
+  const createPostCard = document.querySelector('#dashboard-create-post')
+    || document.querySelector('.small-boxes.left');
+  const browseSessionsCard = document.querySelector('#dashboard-browse-sessions')
+    || document.querySelector('.small-boxes.right');
 
   if (createPostCard) {
     createPostCard.addEventListener('click', function() {
@@ -707,6 +1002,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     await loadCurrentUserContext();
   }
 
+  initializeOfficialSiteNavigation();
   applySchoolBranding();
   initializeReadOnlyUsernameDisplays();
   initializeSchoolFooter();
@@ -715,6 +1011,7 @@ document.addEventListener('DOMContentLoaded', async function() {
   initializeLoginForm();
   initializeSignupActions();
   initializeAdminControls();
+  initializeProfileSettingsForm();
   initializeLogoutButtons();
   ensureAdminCanEndAllVisibleSessions();
   initializeJoinSessionButtons();

@@ -7,61 +7,45 @@
     <link rel="stylesheet" href="styles.css" />
     <script src="actions.js"></script>
   </head>
-  <body>
+  <body class="study-page">
     <header>
-      <h1>Appalachian StudyOver</h1>
-      <div class="profile-icon-container">
-        <a href="SO_ProfilePage.html" class="profile-icon">
-          <div class="user-icon">
-            👤
-          </div>
-        </a>
-      </div>
+      <h1>StudyOver</h1>
     </header>
 
-    <main>
-      <!-- Universal Header Box - First Box -->
-      <div class="header-box">
-        <div class="header-section">
-          <h3>My Sessions</h3>
-        </div>
-        <div class="header-section">
-          <h3>Browse Sessions</h3>
-        </div>
-        <div class="header-section">
-          <h3>Create Post</h3>
-        </div>
-      </div>
+    <main class="dashboard-main">
+      <nav class="header-box" aria-label="Primary"></nav>
 
-      <!-- Create Post Main Container -->
-      <div class="sessions-main-box">
+      <section class="page-shell">
+        <section class="dashboard-hero">
+          <div class="dashboard-hero-panel page-hero-panel">
+            <p class="dashboard-eyebrow">Create Post</p>
+            <h2>Build a new study session with a cleaner form.</h2>
+            <p class="dashboard-summary">
+              Add the subject, time, location, and notes in a simple layout
+              that matches the rest of the dashboard.
+            </p>
+          </div>
+        </section>
+
+        <div class="sessions-main-box">
         <!-- Header Section -->
         <div class="filter-header-section">
           <h3>Create Your Study Session</h3>
+          <p>Fill out the details below and post a session others can join.</p>
         </div>
 
         <!-- Create Post Form -->
         <form id="create-post-form" class="create-post-form">
-          <!-- User Profile Section -->
-          <div class="form-section">
-            <h4>Your Profile</h4>
-            <div class="profile-section">
-              <div class="profile-pic-container">
-                <div class="profile-pic">👤</div>
-                <p id="create-post-display-username" class="profile-display-username"></p>
-                <input type="hidden" id="user-name" name="user-name" />
-              </div>
-            </div>
-          </div>
+          <input type="hidden" id="user-name" name="user-name" />
 
           <!-- Topic and Course Selection -->
           <div class="form-section">
-            <h4>Subject Information</h4>
+            <h4>What Are You Studying?</h4>
             <div class="course-selection">
               <div class="form-group">
-                <label for="topic-select">Topic</label>
+                <label for="topic-select">Subject</label>
                 <select id="topic-select" name="topic" required>
-                  <option value="">Select a topic</option>
+                  <option value="">Choose a subject</option>
                   <option value="computer-science">Computer Science</option>
                   <option value="mathematics">Mathematics</option>
                   <option value="physics">Physics</option>
@@ -69,23 +53,23 @@
                   <option value="biology">Biology</option>
                   <option value="english">English</option>
                   <option value="history">History</option>
-                  <option value="psychology">Psychology</option>
                   <option value="business">Business</option>
-                  <option value="engineering">Engineering</option>
+                  <option value="psychology">Psychology</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
 
               <div class="form-group">
-                <label for="course-code">Course Code</label>
+                <label for="course-code">Course</label>
                 <input
                   type="text"
                   id="course-code"
                   name="course-code"
-                  placeholder="e.g., CS_1440, Java 1, MATH_1120"
+                  placeholder="e.g., CS 1440 or MATH 1110"
                   required
                 />
                 <small class="help-text"
-                  >Enter the specific course number or name</small
+                  >Use the course code or course name students will recognize</small
                 >
               </div>
             </div>
@@ -96,14 +80,16 @@
             <h4>Session Details</h4>
             <div class="session-details-grid">
               <div class="form-group">
-                <label for="session-title">Session Title</label>
+                <label for="session-title">Study Focus (Optional)</label>
                 <input
                   type="text"
                   id="session-title"
                   name="session-title"
-                  placeholder="e.g., Data Structures Study Group"
-                  required
+                  placeholder="e.g., Exam review or homework help"
                 />
+                <small class="help-text"
+                  >Leave blank to use your course as the session title</small
+                >
               </div>
 
               <div class="form-group">
@@ -133,35 +119,23 @@
                   <option value="belk-library">Belk Library</option>
                   <option value="student-union">Student Union</option>
                   <option value="walker-hall">Walker Hall</option>
-                  <option value="rankin-science">
-                    Rankin Science Building
-                  </option>
                   <option value="anne-belk-hall">Anne Belk Hall</option>
-                  <option value="online-zoom">Online (Zoom)</option>
-                  <option value="outdoor-space">Outdoor Space</option>
-                  <option value="other">Other (Specify in details)</option>
+                  <option value="rankin-science">Rankin Science</option>
+                  <option value="online">Online</option>
+                  <option value="off-campus">Off Campus</option>
+                  <option value="other">Other</option>
                 </select>
               </div>
 
               <div class="form-group">
-                <label for="max-participants">Max Participants</label>
+                <label for="max-participants">Group Size</label>
                 <select id="max-participants" name="max-participants" required>
                   <option value="">Choose size</option>
-                  <option value="2-4">Small (2-4 people)</option>
-                  <option value="5-8">Medium (5-8 people)</option>
-                  <option value="9-15">Large (9-15 people)</option>
-                  <option value="15+">Extra Large (15+ people)</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="difficulty-level">Difficulty Level</label>
-                <select id="difficulty-level" name="difficulty-level" required>
-                  <option value="">Select difficulty</option>
-                  <option value="beginner">Beginner</option>
-                  <option value="intermediate">Intermediate</option>
-                  <option value="advanced">Advanced</option>
-                  <option value="mixed">Mixed Levels</option>
+                  <option value="2">2 people</option>
+                  <option value="4">4 people</option>
+                  <option value="6">6 people</option>
+                  <option value="8">8 people</option>
+                  <option value="12">12 people</option>
                 </select>
               </div>
             </div>
@@ -169,32 +143,30 @@
 
           <!-- Comments and Additional Details -->
           <div class="form-section">
-            <h4>Additional Information</h4>
+            <h4>Notes (Optional)</h4>
             <div class="form-group full-width">
-              <label for="session-description">Description & Comments</label>
+              <label for="session-description">Anything students should know?</label>
               <textarea
                 id="session-description"
                 name="session-description"
-                rows="6"
-                placeholder="Provide details about what you'll be studying, what materials to bring, your study goals, any prerequisites, or special instructions for the meeting location..."
-                required
+                rows="5"
+                placeholder="Add quick context like what you plan to cover, what to bring, or how to find the meeting spot."
               ></textarea>
               <small class="help-text"
-                >Minimum 50 characters. Help others understand what to
-                expect!</small
+                >Optional, but useful if you want to give extra context</small
               >
             </div>
           </div>
 
           <!-- Form Actions -->
           <div class="form-actions">
-            <button type="button" class="btn-secondary">Save as Draft</button>
             <button type="submit" class="btn-primary">
-              Create Study Session
+              Post Study Session
             </button>
           </div>
         </form>
-      </div>
+        </div>
+      </section>
     </main>
 
     <footer></footer>

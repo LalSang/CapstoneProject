@@ -7,7 +7,7 @@ prep for exams, and meet other students in the same university community.
 
 - **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** Spring Boot (Java)  
-- **Database:** MySQL  
+- **Storage:** In-memory application state  
 
 ## Features
 
@@ -22,5 +22,4 @@ Make sure you have these installed:
 
 - **Java 17+** (or whatever your Spring Boot project requires)
 - **Maven** (or use the included `mvnw`)
-- **MySQL 8+**
 - **Node.js** *(optional, only if you use tooling like npm scripts)*
