@@ -734,6 +734,13 @@ function initializeCreatePostForm() {
     }
 
     const sessionDescription = document.querySelector('#session-description').value.trim();
+    
+    // Check if a location has been selected on the map
+    const sessionLocation = document.querySelector('#session-location').value;
+    if (!sessionLocation || sessionLocation.trim() === '') {
+      alert('Please select a meeting location on the map before creating your study session.');
+      return;
+    }
 
     const payload = {
       userName: userNameValue,
@@ -742,7 +749,7 @@ function initializeCreatePostForm() {
       sessionTitle: document.querySelector('#session-title').value.trim(),
       sessionDate: document.querySelector('#session-date').value,
       sessionTime: document.querySelector('#session-time').value,
-      sessionLocation: document.querySelector('#session-location').value,
+      sessionLocation: sessionLocation,
       maxParticipants: document.querySelector('#max-participants').value,
       difficultyLevel: '',
       sessionDescription: sessionDescription
@@ -995,6 +1002,185 @@ function initializeDashboardButtons() {
   }
 }
 
+// ==============================================
+// INTERACTIVE MAP FUNCTIONALITY
+// ==============================================
+
+let campusMap = null;
+let selectedLocationMarker = null;
+let selectedLocation = null;
+
+// Appalachian State University campus coordinates
+const APP_STATE_CENTER = [36.2157, -81.6774];
+
+// Campus building locations with their coordinates
+const CAMPUS_BUILDINGS = [
+  { name: 'Belk Library', coords: [36.2147, -81.6782], id: 'belk-library' },
+  { name: 'Student Union', coords: [36.2165, -81.6751], id: 'student-union' },
+  { name: 'Walker Hall', coords: [36.2139, -81.6799], id: 'walker-hall' },
+  { name: 'Anne Belk Hall', coords: [36.2172, -81.6763], id: 'anne-belk-hall' },
+  { name: 'Rankin Science', coords: [36.2134, -81.6785], id: 'rankin-science' },
+  { name: 'Plemmons Student Union', coords: [36.2159, -81.6751], id: 'plemmons-union' },
+  { name: 'Boone Pickens Hall', coords: [36.2176, -81.6789], id: 'boone-pickens' },
+  { name: 'Peacock Hall', coords: [36.2181, -81.6771], id: 'peacock-hall' },
+  { name: 'Sanford Hall', coords: [36.2124, -81.6806], id: 'sanford-hall' },
+  { name: 'Edwin Duncan Hall', coords: [36.2163, -81.6795], id: 'duncan-hall' }
+];
+
+function initializeCampusMap() {
+  const mapContainer = document.getElementById('campus-map');
+  if (!mapContainer) return;
+
+  try {
+    // Initialize map centered on App State campus
+    campusMap = L.map('campus-map', {
+      zoomControl: true,
+      scrollWheelZoom: true,
+      doubleClickZoom: false
+    }).setView(APP_STATE_CENTER, 16);
+
+    // Add OpenStreetMap tiles
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+      maxZoom: 19,
+      minZoom: 14
+    }).addTo(campusMap);
+
+    // Add campus boundary (approximate)
+    const campusBounds = [
+      [36.2190, -81.6820],
+      [36.2190, -81.6720],
+      [36.2120, -81.6720],
+      [36.2120, -81.6820]
+    ];
+    
+    L.polygon(campusBounds, {
+      color: '#8b4513',
+      weight: 2,
+      opacity: 0.8,
+      fillColor: '#f4f1e8',
+      fillOpacity: 0.1
+    }).addTo(campusMap);
+
+    // Add building markers
+    CAMPUS_BUILDINGS.forEach(building => {
+      const marker = L.marker(building.coords, {
+        icon: createBuildingIcon(building.name.charAt(0))
+      }).addTo(campusMap);
+      
+      marker.bindPopup(`
+        <strong>${building.name}</strong><br>
+        <em>Click to select as meeting location</em>
+      `);
+      
+      marker.on('click', function() {
+        selectLocation(building.coords, building.name, building.id);
+      });
+    });
+
+    // Allow clicking anywhere on campus to set custom location
+    campusMap.on('click', function(e) {
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
+      
+      // Check if click is within reasonable campus bounds
+      if (lat >= 36.2100 && lat <= 36.2200 && lng >= -81.6850 && lng <= -81.6700) {
+        selectLocation([lat, lng], 'Custom Location', 'custom');
+      }
+    });
+
+    // Resize map when container changes
+    setTimeout(() => {
+      campusMap.invalidateSize();
+    }, 250);
+
+  } catch (error) {
+    console.error('Error initializing campus map:', error);
+    mapContainer.innerHTML = '<div class="map-loading">Map is temporarily unavailable</div>';
+  }
+}
+
+function createBuildingIcon(letter) {
+  return L.divIcon({
+    className: 'custom-marker building-marker',
+    html: letter,
+    iconSize: [32, 32],
+    iconAnchor: [16, 16]
+  });
+}
+
+function selectLocation(coords, name, id) {
+  selectedLocation = { coords, name, id };
+  
+  // Remove previous selection marker
+  if (selectedLocationMarker) {
+    campusMap.removeLayer(selectedLocationMarker);
+  }
+  
+  // Add new selection marker
+  selectedLocationMarker = L.marker(coords, {
+    icon: L.divIcon({
+      className: 'custom-marker building-marker selected-marker',
+      html: '📍',
+      iconSize: [32, 32],
+      iconAnchor: [16, 16]
+    })
+  }).addTo(campusMap);
+  
+  selectedLocationMarker.bindPopup(`
+    <strong>Selected: ${name}</strong><br>
+    <em>Meeting location confirmed</em>
+  `).openPopup();
+  
+  // Update form fields
+  updateLocationFields(name, id, coords);
+  
+  // Update display
+  updateLocationDisplay(name);
+}
+
+function updateLocationFields(name, id, coords) {
+  const locationField = document.getElementById('session-location');
+  const coordinatesField = document.getElementById('location-coordinates');
+  
+  if (locationField) {
+    locationField.value = id;
+  }
+  
+  if (coordinatesField) {
+    coordinatesField.value = `${coords[0]},${coords[1]}`;
+  }
+}
+
+function updateLocationDisplay(name) {
+  const display = document.getElementById('selected-location-display');
+  if (display) {
+    display.textContent = `Selected: ${name}`;
+    display.className = 'selected-location has-selection';
+  }
+}
+
+function resetLocationSelection() {
+  selectedLocation = null;
+  
+  if (selectedLocationMarker && campusMap) {
+    campusMap.removeLayer(selectedLocationMarker);
+    selectedLocationMarker = null;
+  }
+  
+  const locationField = document.getElementById('session-location');
+  const coordinatesField = document.getElementById('location-coordinates');
+  const display = document.getElementById('selected-location-display');
+  
+  if (locationField) locationField.value = '';
+  if (coordinatesField) coordinatesField.value = '';
+  
+  if (display) {
+    display.textContent = 'Click on the map to select a location';
+    display.className = 'selected-location no-selection';
+  }
+}
+
 document.addEventListener('DOMContentLoaded', async function() {
   const onLoginPage = Boolean(document.querySelector('form.login-form[action="/login"]'));
   const onSignupPage = Boolean(document.querySelector('#signup-form'));
@@ -1017,5 +1203,6 @@ document.addEventListener('DOMContentLoaded', async function() {
   initializeJoinSessionButtons();
   initializeDashboardButtons();
   initializeCreatePostForm();
+  initializeCampusMap();
   await loadCreatedSessions();
 });

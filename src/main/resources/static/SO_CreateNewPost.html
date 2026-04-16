@@ -5,6 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Create New Post</title>
     <link rel="stylesheet" href="styles.css" />
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+          crossorigin=""/>
+    <!-- Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin=""></script>
     <script src="actions.js"></script>
   </head>
   <body class="study-page">
@@ -114,17 +122,12 @@
 
               <div class="form-group">
                 <label for="session-location">Meeting Location</label>
-                <select id="session-location" name="session-location" required>
-                  <option value="">Choose location</option>
-                  <option value="belk-library">Belk Library</option>
-                  <option value="student-union">Student Union</option>
-                  <option value="walker-hall">Walker Hall</option>
-                  <option value="anne-belk-hall">Anne Belk Hall</option>
-                  <option value="rankin-science">Rankin Science</option>
-                  <option value="online">Online</option>
-                  <option value="off-campus">Off Campus</option>
-                  <option value="other">Other</option>
-                </select>
+                <div id="campus-map" style="height: 300px; width: 100%; margin-bottom: 10px; border-radius: 8px; border: 2px solid #ddd;"></div>
+                <input type="hidden" id="session-location" name="session-location" required />
+                <input type="hidden" id="location-coordinates" name="location-coordinates" />
+                <div id="selected-location-display" class="selected-location" style="margin-top: 8px; font-size: 14px; color: #666; font-style: italic;">
+                  Click on the map to select a location
+                </div>
               </div>
 
               <div class="form-group">
