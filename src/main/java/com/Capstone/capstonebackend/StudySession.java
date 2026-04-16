@@ -1,17 +1,47 @@
 package com.Capstone.capstonebackend;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+@Entity
+@Table(name = "study_sessions")
 public class StudySession {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+    
+    @Column(nullable = false)
     private String ownerUsername;
+    
+    @Column(nullable = false)
     private String userName;
+    
+    @Column(nullable = false)
     private String topic;
+    
+    @Column(nullable = false)
     private String courseCode;
+    
     private String sessionTitle;
+    
+    @Column(nullable = false)
     private String sessionDate;
+    
+    @Column(nullable = false)
     private String sessionTime;
+    
+    @Column(nullable = false)
     private String sessionLocation;
+    
     private String maxParticipants;
+    
     private String difficultyLevel;
+    
+    @Column(length = 1000)
     private String sessionDescription;
 
     public StudySession() {

@@ -1015,16 +1015,15 @@ const APP_STATE_CENTER = [36.2157, -81.6774];
 
 // Campus building locations with their coordinates
 const CAMPUS_BUILDINGS = [
-  { name: 'Belk Library', coords: [36.2147, -81.6782], id: 'belk-library' },
-  { name: 'Student Union', coords: [36.2165, -81.6751], id: 'student-union' },
-  { name: 'Walker Hall', coords: [36.2139, -81.6799], id: 'walker-hall' },
-  { name: 'Anne Belk Hall', coords: [36.2172, -81.6763], id: 'anne-belk-hall' },
-  { name: 'Rankin Science', coords: [36.2134, -81.6785], id: 'rankin-science' },
-  { name: 'Plemmons Student Union', coords: [36.2159, -81.6751], id: 'plemmons-union' },
-  { name: 'Boone Pickens Hall', coords: [36.2176, -81.6789], id: 'boone-pickens' },
-  { name: 'Peacock Hall', coords: [36.2181, -81.6771], id: 'peacock-hall' },
-  { name: 'Sanford Hall', coords: [36.2124, -81.6806], id: 'sanford-hall' },
-  { name: 'Edwin Duncan Hall', coords: [36.2163, -81.6795], id: 'duncan-hall' }
+  { name: 'Belk Library', coords: [36.2144, -81.6781], id: 'belk-library' },
+  { name: 'Student Union', coords: [36.2166, -81.6753], id: 'student-union' },
+  { name: 'Walker Hall', coords: [36.2142, -81.6798], id: 'walker-hall' },
+  { name: 'Anne Belk Hall', coords: [36.2143, -81.6803], id: 'anne-belk-hall' },
+  { name: 'Rankin Science', coords: [36.2158, -81.6806], id: 'rankin-science' },
+  { name: 'Plemmons Student Union', coords: [36.2166, -81.6753], id: 'plemmons-union' },
+  { name: 'Peacock Hall', coords: [36.2183, -81.6775], id: 'peacock-hall' },
+  { name: 'Sanford Hall', coords: [36.2132, -81.6801], id: 'sanford-hall' },
+  { name: 'Edwin Duncan Hall', coords: [36.2163, -81.6798], id: 'duncan-hall' }
 ];
 
 function initializeCampusMap() {
@@ -1048,10 +1047,10 @@ function initializeCampusMap() {
 
     // Add campus boundary (approximate)
     const campusBounds = [
-      [36.2190, -81.6820],
-      [36.2190, -81.6720],
-      [36.2120, -81.6720],
-      [36.2120, -81.6820]
+      [36.2220, -81.6850], // Northwest corner (Further up toward Howard St/Downtown)
+      [36.2220, -81.6700], // Northeast corner (Past the Student Union toward 105)
+      [36.2090, -81.6700], // Southeast corner (Down toward State Farm/Greenway)
+      [36.2090, -81.6850]
     ];
     
     L.polygon(campusBounds, {
@@ -1065,7 +1064,7 @@ function initializeCampusMap() {
     // Add building markers
     CAMPUS_BUILDINGS.forEach(building => {
       const marker = L.marker(building.coords, {
-        icon: createBuildingIcon(building.name.charAt(0))
+        icon: createBuildingIcon(building.name)
       }).addTo(campusMap);
       
       marker.bindPopup(`
@@ -1100,10 +1099,16 @@ function initializeCampusMap() {
   }
 }
 
-function createBuildingIcon(letter) {
+function createBuildingIcon(buildingName) {
+  // Extract first letter of each word
+  const initials = buildingName
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase())
+    .join('');
+  
   return L.divIcon({
     className: 'custom-marker building-marker',
-    html: letter,
+    html: initials,
     iconSize: [32, 32],
     iconAnchor: [16, 16]
   });

@@ -1,23 +1,22 @@
 package com.Capstone.capstonebackend;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.atomic.AtomicLong;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class StudySessionService {
-    private final AtomicLong idGenerator = new AtomicLong(1);
-    private final CopyOnWriteArrayList<StudySession> sessions = new CopyOnWriteArrayList<>();
+    
+    @Autowired
+    private StudySessionRepository repository;
 
     public StudySession create(CreateStudySessionRequest request, String ownerUsername) {
         String courseCode = clean(request.getCourseCode());
         String topic = clean(request.getTopic());
         StudySession session = new StudySession(
-                idGenerator.getAndIncrement(),
+                0, // Database will auto-generate ID
                 ownerUsername,
                 clean(request.getUserName()),
                 topic,
@@ -30,22 +29,23 @@ public class StudySessionService {
                 clean(request.getDifficultyLevel()),
                 clean(request.getSessionDescription()));
 
-        sessions.add(session);
-        return session;
+        return repository.save(session);
     }
 
     public List<StudySession> getAll() {
-        List<StudySession> copy = new ArrayList<>(sessions);
-        copy.sort(Comparator.comparingLong(StudySession::getId).reversed());
-        return copy;
+        return repository.findAllByOrderByIdDesc();
     }
 
     public Optional<StudySession> findById(long id) {
-        return sessions.stream().filter(session -> session.getId() == id).findFirst();
+        return repository.findById(id);
     }
 
     public boolean deleteById(long id) {
-        return sessions.removeIf(session -> session.getId() == id);
+        if (repository.existsById(id)) {
+            repository.deleteById(id);
+            return true;
+        }
+        return false;
     }
 
     private String resolveSessionTitle(String requestedTitle, String courseCode, String topic) {
