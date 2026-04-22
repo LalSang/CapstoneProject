@@ -893,7 +893,7 @@ body.study-page .detail-item span:last-child {
 }
 
 body.study-page .session-footer {
-  justify-content: flex-start;
+  justify-content: center;
   margin-top: 18px;
 }
 
@@ -913,6 +913,21 @@ body.study-page .btn-primary:hover {
   background: #1f2937;
   transform: translateY(-1px);
   box-shadow: 0 14px 24px rgba(15, 23, 42, 0.2);
+}
+
+body.study-page .join-btn:disabled {
+  background: #9ca3af;
+  color: #f9fafb;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.85;
+}
+
+body.study-page .join-btn:disabled:hover {
+  background: #9ca3af;
+  transform: none;
+  box-shadow: none;
 }
 
 body.study-page .delete-session-btn {

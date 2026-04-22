@@ -169,6 +169,27 @@ public class HomeController {
         return ResponseEntity.status(HttpStatus.CREATED).body(createdSession);
     }
 
+    @PostMapping(path = "/api/sessions/{id}/join", produces = MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> joinSession(@PathVariable long id, HttpSession session) {
+        String requester = getSessionValue(session, "userEmail");
+        if (isBlank(requester)) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(Map.of("error", "Please log in again."));
+        }
+
+        StudySessionService.JoinSessionResult result = studySessionService.joinSession(id, requester);
+        return switch (result.getStatus()) {
+            case JOINED -> ResponseEntity.ok(result.getSession());
+            case NOT_FOUND -> ResponseEntity.notFound().build();
+            case OWNER_BLOCKED -> ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body(Map.of("error", "You cannot join your own session."));
+            case ALREADY_JOINED -> ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "You have already joined this session."));
+            case FULL -> ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(Map.of("error", "This session is already full."));
+        };
+    }
+
     @PostMapping(path = "/api/admin/users", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<?> createUserAccount(@RequestBody CreateUserAccountRequest request, HttpSession session) {

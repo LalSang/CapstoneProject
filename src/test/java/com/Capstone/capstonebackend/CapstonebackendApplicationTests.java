@@ -114,5 +114,112 @@ class CapstonebackendApplicationTests {
         assertThat(created.getDifficultyLevel()).isEmpty();
         assertThat(created.getSessionDescription()).isEmpty();
         assertThat(created.getMaxParticipants()).isEqualTo("6");
+        assertThat(created.getParticipantCount()).isZero();
+    }
+
+    @Test
+    void sessionOwnerCannotJoinOwnSession() {
+        CreateStudySessionRequest request = new CreateStudySessionRequest();
+        request.setUserName("owner@appstate.edu");
+        request.setTopic("computer-science");
+        request.setCourseCode("CS 2440");
+        request.setSessionDate("2026-04-16");
+        request.setSessionTime("19:00");
+        request.setSessionLocation("belk-library");
+        request.setMaxParticipants("4");
+
+        MockHttpSession ownerSession = new MockHttpSession();
+        ownerSession.setAttribute("userEmail", "owner@appstate.edu");
+
+        var createResponse = homeController.createSession(request, ownerSession);
+        StudySession created = (StudySession) createResponse.getBody();
+
+        var joinResponse = homeController.joinSession(created.getId(), ownerSession);
+
+        assertThat(joinResponse.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
+        assertThat(joinResponse.getBody()).isEqualTo(java.util.Map.of("error", "You cannot join your own session."));
+    }
+
+    @Test
+    void joiningSessionTracksParticipantCountUntilCapacity() {
+        CreateStudySessionRequest request = new CreateStudySessionRequest();
+        request.setUserName("host@appstate.edu");
+        request.setTopic("mathematics");
+        request.setCourseCode("MATH 1110");
+        request.setSessionDate("2026-04-17");
+        request.setSessionTime("17:00");
+        request.setSessionLocation("walker-hall");
+        request.setMaxParticipants("4");
+
+        MockHttpSession ownerSession = new MockHttpSession();
+        ownerSession.setAttribute("userEmail", "host@appstate.edu");
+
+        var createResponse = homeController.createSession(request, ownerSession);
+        StudySession created = (StudySession) createResponse.getBody();
+
+        MockHttpSession firstJoiner = new MockHttpSession();
+        firstJoiner.setAttribute("userEmail", "joiner-one@appstate.edu");
+        var firstJoinResponse = homeController.joinSession(created.getId(), firstJoiner);
+
+        MockHttpSession secondJoiner = new MockHttpSession();
+        secondJoiner.setAttribute("userEmail", "joiner-two@appstate.edu");
+        var secondJoinResponse = homeController.joinSession(created.getId(), secondJoiner);
+
+        MockHttpSession thirdJoiner = new MockHttpSession();
+        thirdJoiner.setAttribute("userEmail", "joiner-three@appstate.edu");
+        var thirdJoinResponse = homeController.joinSession(created.getId(), thirdJoiner);
+
+        MockHttpSession fourthJoiner = new MockHttpSession();
+        fourthJoiner.setAttribute("userEmail", "joiner-four@appstate.edu");
+        var fourthJoinResponse = homeController.joinSession(created.getId(), fourthJoiner);
+
+        assertThat(firstJoinResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(secondJoinResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(thirdJoinResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+
+        StudySession joinedSession = (StudySession) thirdJoinResponse.getBody();
+        assertThat(joinedSession).isNotNull();
+        assertThat(joinedSession.getParticipantCount()).isEqualTo(3);
+        assertThat(joinedSession.getMaxParticipants()).isEqualTo("4");
+
+        assertThat(fourthJoinResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        StudySession fullSession = (StudySession) fourthJoinResponse.getBody();
+        assertThat(fullSession).isNotNull();
+        assertThat(fullSession.getParticipantCount()).isEqualTo(4);
+
+        MockHttpSession overflowJoiner = new MockHttpSession();
+        overflowJoiner.setAttribute("userEmail", "joiner-five@appstate.edu");
+        var overflowJoinResponse = homeController.joinSession(created.getId(), overflowJoiner);
+
+        assertThat(overflowJoinResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(overflowJoinResponse.getBody()).isEqualTo(java.util.Map.of("error", "This session is already full."));
+    }
+
+    @Test
+    void sameUserCannotJoinTheSameSessionTwice() {
+        CreateStudySessionRequest request = new CreateStudySessionRequest();
+        request.setUserName("repeat-host@appstate.edu");
+        request.setTopic("history");
+        request.setCourseCode("HIS 1010");
+        request.setSessionDate("2026-04-18");
+        request.setSessionTime("16:00");
+        request.setSessionLocation("anne-belk-hall");
+        request.setMaxParticipants("4");
+
+        MockHttpSession ownerSession = new MockHttpSession();
+        ownerSession.setAttribute("userEmail", "repeat-host@appstate.edu");
+
+        var createResponse = homeController.createSession(request, ownerSession);
+        StudySession created = (StudySession) createResponse.getBody();
+
+        MockHttpSession joinerSession = new MockHttpSession();
+        joinerSession.setAttribute("userEmail", "repeat-joiner@appstate.edu");
+
+        var firstJoinResponse = homeController.joinSession(created.getId(), joinerSession);
+        var secondJoinResponse = homeController.joinSession(created.getId(), joinerSession);
+
+        assertThat(firstJoinResponse.getStatusCode()).isEqualTo(HttpStatus.OK);
+        assertThat(secondJoinResponse.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+        assertThat(secondJoinResponse.getBody()).isEqualTo(java.util.Map.of("error", "You have already joined this session."));
     }
 }

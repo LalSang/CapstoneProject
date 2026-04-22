@@ -501,8 +501,50 @@ function initializeJoinSessionButtons() {
     }
 
     button.dataset.joinBound = 'true';
-    button.addEventListener('click', function() {
-      window.location.href = '/join-session';
+    button.addEventListener('click', async function() {
+      if (button.disabled) {
+        return;
+      }
+
+      const sessionCard = button.closest('.session-card');
+      if (!sessionCard) {
+        return;
+      }
+
+      const sessionId = sessionCard.dataset.sessionId;
+      if (!sessionId) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/sessions/${sessionId}/join`, {
+          method: 'POST'
+        });
+
+        if (response.status === 403) {
+          alert('You cannot join your own session.');
+          return;
+        }
+
+        if (response.status === 409) {
+          const errorBody = await response.json().catch(() => null);
+          const message = errorBody && errorBody.error ? errorBody.error : 'Unable to join this session.';
+          alert(message);
+          return;
+        }
+
+        if (!response.ok) {
+          alert('Unable to join session right now.');
+          return;
+        }
+
+        await loadCreatedSessions();
+        await loadMySessions();
+        alert('RSVP confirmed!');
+      } catch (error) {
+        console.error('Unable to join session:', error);
+        alert('Unable to join session right now.');
+      }
     });
   });
 }
@@ -514,6 +556,27 @@ function setBrowseSessionsEmptyStateVisible(isVisible) {
   }
 
   emptyState.classList.toggle('hidden', !isVisible);
+}
+
+function setMySessionsEmptyStateVisible(isVisible) {
+  const emptyState = document.querySelector('#my-sessions-empty-state');
+  if (!emptyState) {
+    return;
+  }
+
+  emptyState.classList.toggle('hidden', !isVisible);
+}
+
+function syncRenderedSessionEmptyStates() {
+  const browseSessionsGrid = document.querySelector('#browse-sessions-grid');
+  if (browseSessionsGrid) {
+    setBrowseSessionsEmptyStateVisible(!browseSessionsGrid.childElementCount);
+  }
+
+  const mySessionsGrid = document.querySelector('#my-sessions-grid');
+  if (mySessionsGrid) {
+    setMySessionsEmptyStateVisible(!mySessionsGrid.childElementCount);
+  }
 }
 
 function humanizeValue(value) {
@@ -535,16 +598,221 @@ function escapeHtml(value) {
     .replace(/'/g, '&#39;');
 }
 
+function toComparableCampusUsername(value) {
+  return toAppStateEmail(value);
+}
+
+function isSessionOwnedByCurrentUser(session) {
+  const currentUsername = toComparableCampusUsername(currentUserContext && currentUserContext.username);
+  if (!currentUsername) {
+    return false;
+  }
+
+  const ownerUsername = toComparableCampusUsername(session && session.ownerUsername);
+  const hostUsername = toComparableCampusUsername(session && session.userName);
+  return ownerUsername === currentUsername || hostUsername === currentUsername;
+}
+
+function getSessionDateAtMidnight(value) {
+  const normalized = value ? value.toString().trim() : '';
+  if (!normalized) {
+    return null;
+  }
+
+  const sessionDate = new Date(`${normalized}T00:00:00`);
+  if (Number.isNaN(sessionDate.getTime())) {
+    return null;
+  }
+
+  return sessionDate;
+}
+
+function getTodayAtMidnight() {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  return today;
+}
+
+function matchesMySessionStatusFilter(session) {
+  const activeFilter = document.querySelector('#active-filter');
+  const selectedStatus = normalizeLower(activeFilter && activeFilter.value);
+  if (!selectedStatus) {
+    return true;
+  }
+
+  const sessionDate = getSessionDateAtMidnight(session && session.sessionDate);
+  if (!sessionDate) {
+    return false;
+  }
+
+  const today = getTodayAtMidnight();
+  if (selectedStatus === 'completed') {
+    return sessionDate < today;
+  }
+  if (selectedStatus === 'active') {
+    return sessionDate.getTime() === today.getTime();
+  }
+  if (selectedStatus === 'upcoming') {
+    return sessionDate > today;
+  }
+
+  return true;
+}
+
+function matchesMySessionLocationFilter(session) {
+  const locationFilter = document.querySelector('#location-filter');
+  const selectedLocation = normalizeLower(locationFilter && locationFilter.value);
+  if (!selectedLocation) {
+    return true;
+  }
+
+  const sessionLocation = normalizeLower(session && session.sessionLocation);
+  if (selectedLocation === 'library') {
+    return sessionLocation.includes('library');
+  }
+  if (selectedLocation === 'student-union') {
+    return sessionLocation === 'student-union';
+  }
+  if (selectedLocation === 'academic-buildings') {
+    return ['walker-hall', 'anne-belk-hall', 'rankin-science'].includes(sessionLocation);
+  }
+  if (selectedLocation === 'online') {
+    return sessionLocation === 'online';
+  }
+
+  return true;
+}
+
+const MY_SESSION_COURSE_FILTER_MAP = {
+  cs: ['computer-science', 'cs'],
+  math: ['mathematics', 'math'],
+  english: ['english', 'eng'],
+  history: ['history', 'his'],
+  biology: ['biology', 'bio'],
+  chemistry: ['chemistry', 'chem']
+};
+
+function matchesMySessionCourseFilter(session) {
+  const courseFilter = document.querySelector('#course-filter');
+  const selectedCourse = normalizeLower(courseFilter && courseFilter.value);
+  if (!selectedCourse) {
+    return true;
+  }
+
+  const topic = normalizeLower(session && session.topic);
+  const courseCode = normalizeLower(session && session.courseCode);
+  const matchTokens = MY_SESSION_COURSE_FILTER_MAP[selectedCourse] || [selectedCourse];
+
+  return matchTokens.some((token) => {
+    return topic.includes(token) || courseCode.startsWith(token) || courseCode.includes(`${token} `);
+  });
+}
+
+function matchesMySessionTimeFilter(session) {
+  const timeFilter = document.querySelector('#time-filter');
+  const selectedTime = normalizeLower(timeFilter && timeFilter.value);
+  if (!selectedTime) {
+    return true;
+  }
+
+  const sessionTime = normalizeLower(session && session.sessionTime);
+  return sessionTime.startsWith(selectedTime);
+}
+
+function matchesMySessionFilters(session) {
+  return matchesMySessionStatusFilter(session)
+    && matchesMySessionLocationFilter(session)
+    && matchesMySessionCourseFilter(session)
+    && matchesMySessionTimeFilter(session);
+}
+
+function normalizeJoinedUsernames(session) {
+  const joinedUsernames = session && Array.isArray(session.joinedUsernames)
+    ? session.joinedUsernames
+    : [];
+  return joinedUsernames
+    .map((value) => toComparableCampusUsername(value))
+    .filter(Boolean);
+}
+
+function hasCurrentUserJoinedSession(session) {
+  const currentUsername = toComparableCampusUsername(currentUserContext && currentUserContext.username);
+  if (!currentUsername) {
+    return false;
+  }
+
+  return normalizeJoinedUsernames(session).includes(currentUsername);
+}
+
+function resolveSessionCapacity(session) {
+  const rawValue = session && session.maxParticipants
+    ? session.maxParticipants.toString().trim()
+    : '';
+  if (!rawValue) {
+    return 0;
+  }
+
+  const rangeValues = rawValue.split('-');
+  const lastValue = rangeValues[rangeValues.length - 1].trim();
+  const parsedValue = Number.parseInt(lastValue, 10);
+  return Number.isNaN(parsedValue) ? 0 : parsedValue;
+}
+
+function getSessionParticipantCount(session) {
+  if (session && Number.isFinite(session.participantCount)) {
+    return session.participantCount;
+  }
+
+  return normalizeJoinedUsernames(session).length;
+}
+
+function getSessionParticipantLabel(session) {
+  const participantCount = getSessionParticipantCount(session);
+  const capacity = resolveSessionCapacity(session);
+  if (capacity > 0) {
+    return `${participantCount}/${capacity}`;
+  }
+
+  return `${participantCount}`;
+}
+
+function isSessionFull(session) {
+  const capacity = resolveSessionCapacity(session);
+  return capacity > 0 && getSessionParticipantCount(session) >= capacity;
+}
+
+function getJoinButtonMarkup(session) {
+  if (isSessionOwnedByCurrentUser(session)) {
+    return '<button class="join-btn" type="button" disabled>Your Session</button>';
+  }
+
+  if (hasCurrentUserJoinedSession(session)) {
+    return '<button class="join-btn" type="button" disabled>Joined</button>';
+  }
+
+  if (isSessionFull(session)) {
+    return '<button class="join-btn" type="button" disabled>Session Full</button>';
+  }
+
+  return '<button class="join-btn" type="button">Join Session</button>';
+}
+
+function renderSessionsIntoGrid(sessionsGrid, sessions) {
+  if (!sessionsGrid) {
+    return;
+  }
+
+  sessionsGrid.innerHTML = '';
+  sessions.forEach((session) => {
+    sessionsGrid.appendChild(buildSessionCard(session));
+  });
+}
+
 function buildSessionCard(session) {
   const hostUsername = session && session.userName && session.userName.toString().trim()
     ? session.userName.toString().trim()
     : 'Unknown';
-  const maxParticipants = session && session.maxParticipants && session.maxParticipants.toString().trim()
-    ? session.maxParticipants.toString().trim()
-    : '';
-  const sizeLabel = maxParticipants.includes('-')
-    ? maxParticipants.replace('-', ' to ')
-    : maxParticipants;
+  const participantLabel = getSessionParticipantLabel(session);
   const notesMarkup = session && session.sessionDescription && session.sessionDescription.toString().trim()
     ? `
       <div class="detail-item">
@@ -574,8 +842,8 @@ function buildSessionCard(session) {
         <span>${escapeHtml(humanizeValue(session.sessionLocation))}</span>
       </div>
       <div class="detail-item">
-        <span class="detail-label">Size:</span>
-        <span>${escapeHtml(sizeLabel)} spots</span>
+        <span class="detail-label">Joined:</span>
+        <span>${escapeHtml(participantLabel)}</span>
       </div>
       <div class="detail-item">
         <span class="detail-label">Host:</span>
@@ -585,7 +853,7 @@ function buildSessionCard(session) {
     </div>
     <div class="session-footer">
       ${deleteButtonMarkup}
-      <button class="join-btn">Join Session</button>
+      ${getJoinButtonMarkup(session)}
     </div>
   `;
 
@@ -615,6 +883,7 @@ function initializeDeleteSessionButtons() {
         // Fallback for static cards that are not backed by an API record.
         if (hasAdminAccess()) {
           sessionCard.remove();
+          syncRenderedSessionEmptyStates();
         }
         return;
       }
@@ -635,6 +904,7 @@ function initializeDeleteSessionButtons() {
         }
 
         sessionCard.remove();
+        syncRenderedSessionEmptyStates();
       } catch (error) {
         console.error('Unable to end session:', error);
         alert('Unable to end session right now. Try again.');
@@ -675,7 +945,7 @@ function ensureAdminCanEndAllVisibleSessions() {
 }
 
 async function loadCreatedSessions() {
-  const sessionsGrid = document.querySelector('.sessions-grid');
+  const sessionsGrid = document.querySelector('#browse-sessions-grid');
   if (!sessionsGrid) {
     return;
   }
@@ -683,30 +953,78 @@ async function loadCreatedSessions() {
   try {
     const response = await fetch('/api/sessions');
     if (!response.ok) {
+      sessionsGrid.innerHTML = '';
       setBrowseSessionsEmptyStateVisible(true);
       return;
     }
 
     const sessions = await response.json();
     if (!Array.isArray(sessions) || !sessions.length) {
+      sessionsGrid.innerHTML = '';
       setBrowseSessionsEmptyStateVisible(true);
       return;
     }
 
-    setBrowseSessionsEmptyStateVisible(false);
-
-    sessions.forEach((session) => {
-      const sessionCard = buildSessionCard(session);
-      sessionsGrid.prepend(sessionCard);
-    });
-
+    renderSessionsIntoGrid(sessionsGrid, sessions);
     ensureAdminCanEndAllVisibleSessions();
     initializeJoinSessionButtons();
     initializeDeleteSessionButtons();
+    syncRenderedSessionEmptyStates();
   } catch (error) {
     console.error('Unable to load created sessions:', error);
+    sessionsGrid.innerHTML = '';
     setBrowseSessionsEmptyStateVisible(true);
   }
+}
+
+async function loadMySessions() {
+  const sessionsGrid = document.querySelector('#my-sessions-grid');
+  if (!sessionsGrid) {
+    return;
+  }
+
+  try {
+    const response = await fetch('/api/sessions');
+    if (!response.ok) {
+      sessionsGrid.innerHTML = '';
+      setMySessionsEmptyStateVisible(true);
+      return;
+    }
+
+    const sessions = await response.json();
+    const mySessions = Array.isArray(sessions)
+      ? sessions.filter((session) => isSessionOwnedByCurrentUser(session) && matchesMySessionFilters(session))
+      : [];
+
+    renderSessionsIntoGrid(sessionsGrid, mySessions);
+    ensureAdminCanEndAllVisibleSessions();
+    initializeJoinSessionButtons();
+    initializeDeleteSessionButtons();
+    syncRenderedSessionEmptyStates();
+  } catch (error) {
+    console.error('Unable to load your sessions:', error);
+    sessionsGrid.innerHTML = '';
+    setMySessionsEmptyStateVisible(true);
+  }
+}
+
+function initializeMySessionsFilters() {
+  const mySessionsGrid = document.querySelector('#my-sessions-grid');
+  if (!mySessionsGrid) {
+    return;
+  }
+
+  ['#active-filter', '#location-filter', '#course-filter', '#time-filter'].forEach((selector) => {
+    const control = document.querySelector(selector);
+    if (!control || control.dataset.mySessionsBound === 'true') {
+      return;
+    }
+
+    control.dataset.mySessionsBound = 'true';
+    control.addEventListener('change', function() {
+      void loadMySessions();
+    });
+  });
 }
 
 function initializeCreatePostForm() {
@@ -771,7 +1089,7 @@ function initializeCreatePostForm() {
         return;
       }
 
-      window.location.href = '/browse-sessions';
+      window.location.href = '/SO_YourSessions.html';
     } catch (error) {
       console.error('Unable to create session:', error);
       alert('Unable to create session right now. Try again.');
@@ -1208,6 +1526,11 @@ document.addEventListener('DOMContentLoaded', async function() {
   initializeJoinSessionButtons();
   initializeDashboardButtons();
   initializeCreatePostForm();
+<<<<<<< HEAD
   initializeCampusMap();
+=======
+  initializeMySessionsFilters();
+>>>>>>> dd4dedb (new changes)
   await loadCreatedSessions();
+  await loadMySessions();
 });

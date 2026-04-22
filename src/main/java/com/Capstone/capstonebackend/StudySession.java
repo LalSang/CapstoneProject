@@ -1,5 +1,6 @@
 package com.Capstone.capstonebackend;
 
+<<<<<<< HEAD
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,6 +10,11 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "study_sessions")
+=======
+import java.util.ArrayList;
+import java.util.List;
+
+>>>>>>> dd4dedb (new changes)
 public class StudySession {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -43,6 +49,7 @@ public class StudySession {
     
     @Column(length = 1000)
     private String sessionDescription;
+    private List<String> joinedUsernames = new ArrayList<>();
 
     public StudySession() {
     }
@@ -59,7 +66,8 @@ public class StudySession {
             String sessionLocation,
             String maxParticipants,
             String difficultyLevel,
-            String sessionDescription) {
+            String sessionDescription,
+            List<String> joinedUsernames) {
         this.id = id;
         this.ownerUsername = ownerUsername;
         this.userName = userName;
@@ -72,6 +80,7 @@ public class StudySession {
         this.maxParticipants = maxParticipants;
         this.difficultyLevel = difficultyLevel;
         this.sessionDescription = sessionDescription;
+        this.joinedUsernames = joinedUsernames == null ? new ArrayList<>() : new ArrayList<>(joinedUsernames);
     }
 
     public long getId() {
@@ -168,5 +177,17 @@ public class StudySession {
 
     public void setSessionDescription(String sessionDescription) {
         this.sessionDescription = sessionDescription;
+    }
+
+    public List<String> getJoinedUsernames() {
+        return joinedUsernames;
+    }
+
+    public void setJoinedUsernames(List<String> joinedUsernames) {
+        this.joinedUsernames = joinedUsernames == null ? new ArrayList<>() : new ArrayList<>(joinedUsernames);
+    }
+
+    public int getParticipantCount() {
+        return joinedUsernames == null ? 0 : joinedUsernames.size();
     }
 }
