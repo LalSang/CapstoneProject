@@ -21,12 +21,12 @@ import org.springframework.web.bind.annotation.ResponseBody;
 public class HomeController {
 
     private final AppstateAuthProvider authProvider;
-    private final InMemoryAuthService authService;
+    private final AuthService authService;
     private final StudySessionService studySessionService;
 
     public HomeController(
             AppstateAuthProvider authProvider,
-            InMemoryAuthService authService,
+            AuthService authService,
             StudySessionService studySessionService) {
         this.authProvider = authProvider;
         this.authService = authService;

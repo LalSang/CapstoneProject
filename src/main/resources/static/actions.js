@@ -1448,8 +1448,16 @@ const CAMPUS_BUILDINGS = [
 function initializeCampusMap() {
   const mapContainer = document.getElementById("campus-map");
   if (!mapContainer) return;
+  if (campusMap) {
+    campusMap.invalidateSize();
+    return;
+  }
 
   try {
+    if (typeof L === "undefined") {
+      throw new Error("Leaflet is not loaded.");
+    }
+
     // Initialize map centered on App State campus
     campusMap = L.map("campus-map", {
       zoomControl: true,
@@ -1634,6 +1642,7 @@ document.addEventListener("DOMContentLoaded", async function () {
   initializeJoinSessionButtons();
   initializeDashboardButtons();
   initializeCreatePostForm();
+  initializeCampusMap();
   initializeMySessionsFilters();
   await loadCreatedSessions();
   await loadMySessions();

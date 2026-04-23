@@ -118,5 +118,115 @@
     </main>
 
     <footer></footer>
+
+    <!-- Chatbot -->
+    <div id="chatbot-button" onclick="toggleChat()">💬</div>
+    <div id="chatbot-container">
+      <div id="chatbot-header">
+        <span>StudyOver Assistant</span>
+        <button onclick="toggleChat()">×</button>
+      </div>
+      <div id="chatbot-messages"></div>
+      <div id="chatbot-input-container">
+        <input
+          type="text"
+          id="chatbot-input"
+          placeholder="Type your message..."
+          onkeypress="handleKeyPress(event)"
+        />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <script>
+      let chatVisible = localStorage.getItem("chatVisible") === "true";
+      let chatMessages = JSON.parse(
+        localStorage.getItem("chatMessages") || "[]",
+      );
+
+      // Set initial state on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("chatbot-container").style.display = chatVisible
+          ? "block"
+          : "none";
+        // Load saved messages
+        loadMessages();
+      });
+
+      function loadMessages() {
+        const messagesDiv = document.getElementById("chatbot-messages");
+        messagesDiv.innerHTML = ""; // Clear existing
+        chatMessages.forEach((msg) => {
+          addMessage(msg.sender, msg.message, false); // Don't save again
+        });
+      }
+
+      function saveMessages() {
+        localStorage.setItem("chatMessages", JSON.stringify(chatMessages));
+      }
+
+      function toggleChat() {
+        chatVisible = !chatVisible;
+        localStorage.setItem("chatVisible", chatVisible);
+        document.getElementById("chatbot-container").style.display = chatVisible
+          ? "block"
+          : "none";
+        if (
+          chatVisible &&
+          document.getElementById("chatbot-messages").children.length === 0
+        ) {
+          addMessage(
+            "AI",
+            "Welcome to StudyOver! How can I help you with creating or finding study sessions today?",
+            true,
+          );
+        }
+      }
+
+      function addMessage(sender, message, shouldSave = true) {
+        const messagesDiv = document.getElementById("chatbot-messages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className =
+          "chatbot-message " + (sender === "You" ? "user" : "ai");
+        messageDiv.innerHTML = "<strong>" + sender + ":</strong> " + message;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        if (shouldSave) {
+          chatMessages.push({ sender, message });
+          saveMessages();
+        }
+      }
+
+      function sendMessage() {
+        const input = document.getElementById("chatbot-input");
+        const message = input.value.trim();
+        if (message) {
+          addMessage("You", message);
+          input.value = "";
+
+          fetch("/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ message: message }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              addMessage("AI", data.response);
+            })
+            .catch((error) => {
+              addMessage("AI", "Sorry, I'm having trouble. Please try again.");
+            });
+        }
+      }
+
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+      }
+    </script>
   </body>
 </html>

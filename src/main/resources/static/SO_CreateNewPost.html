@@ -6,13 +6,18 @@
     <title>Create New Post</title>
     <link rel="stylesheet" href="styles.css" />
     <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-          integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
-          crossorigin=""/>
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+      crossorigin=""
+    />
     <!-- Leaflet JavaScript -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-            crossorigin=""></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+      crossorigin=""
+    ></script>
     <script src="actions.js"></script>
   </head>
   <body class="study-page">
@@ -29,149 +34,280 @@
             <p class="dashboard-eyebrow">Create Post</p>
             <h2>Build a new study session with a cleaner form.</h2>
             <p class="dashboard-summary">
-              Add the subject, time, location, and notes in a simple layout
-              that matches the rest of the dashboard.
+              Add the subject, time, location, and notes in a simple layout that
+              matches the rest of the dashboard.
             </p>
           </div>
         </section>
 
         <div class="sessions-main-box">
-        <!-- Header Section -->
-        <div class="filter-header-section">
-          <h3>Create Your Study Session</h3>
-          <p>Fill out the details below and post a session others can join.</p>
-        </div>
-
-        <!-- Create Post Form -->
-        <form id="create-post-form" class="create-post-form">
-          <input type="hidden" id="user-name" name="user-name" />
-
-          <!-- Topic and Course Selection -->
-          <div class="form-section">
-            <h4>What Are You Studying?</h4>
-            <div class="course-selection">
-              <div class="form-group">
-                <label for="topic-select">Subject</label>
-                <select id="topic-select" name="topic" required>
-                  <option value="">Choose a subject</option>
-                  <option value="computer-science">Computer Science</option>
-                  <option value="mathematics">Mathematics</option>
-                  <option value="physics">Physics</option>
-                  <option value="chemistry">Chemistry</option>
-                  <option value="biology">Biology</option>
-                  <option value="english">English</option>
-                  <option value="history">History</option>
-                  <option value="business">Business</option>
-                  <option value="psychology">Psychology</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-
-              <div class="form-group">
-                <label for="course-code">Course</label>
-                <input
-                  type="text"
-                  id="course-code"
-                  name="course-code"
-                  placeholder="e.g., CS 1440 or MATH 1110"
-                  required
-                />
-                <small class="help-text"
-                  >Use the course code or course name students will recognize</small
-                >
-              </div>
-            </div>
+          <!-- Header Section -->
+          <div class="filter-header-section">
+            <h3>Create Your Study Session</h3>
+            <p>
+              Fill out the details below and post a session others can join.
+            </p>
           </div>
 
-          <!-- Session Details -->
-          <div class="form-section">
-            <h4>Session Details</h4>
-            <div class="session-details-grid">
-              <div class="form-group">
-                <label for="session-title">Study Focus (Optional)</label>
-                <input
-                  type="text"
-                  id="session-title"
-                  name="session-title"
-                  placeholder="e.g., Exam review or homework help"
-                />
-                <small class="help-text"
-                  >Leave blank to use your course as the session title</small
-                >
-              </div>
+          <!-- Create Post Form -->
+          <form id="create-post-form" class="create-post-form">
+            <input type="hidden" id="user-name" name="user-name" />
 
-              <div class="form-group">
-                <label for="session-date">Date</label>
-                <input
-                  type="date"
-                  id="session-date"
-                  name="session-date"
-                  required
-                />
-              </div>
+            <!-- Topic and Course Selection -->
+            <div class="form-section">
+              <h4>What Are You Studying?</h4>
+              <div class="course-selection">
+                <div class="form-group">
+                  <label for="topic-select">Subject</label>
+                  <select id="topic-select" name="topic" required>
+                    <option value="">Choose a subject</option>
+                    <option value="computer-science">Computer Science</option>
+                    <option value="mathematics">Mathematics</option>
+                    <option value="physics">Physics</option>
+                    <option value="chemistry">Chemistry</option>
+                    <option value="biology">Biology</option>
+                    <option value="english">English</option>
+                    <option value="history">History</option>
+                    <option value="business">Business</option>
+                    <option value="psychology">Psychology</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
 
-              <div class="form-group">
-                <label for="session-time">Time</label>
-                <input
-                  type="time"
-                  id="session-time"
-                  name="session-time"
-                  required
-                />
-              </div>
-
-              <div class="form-group">
-                <label for="session-location">Meeting Location</label>
-                <div id="campus-map" style="height: 300px; width: 100%; margin-bottom: 10px; border-radius: 8px; border: 2px solid #ddd;"></div>
-                <input type="hidden" id="session-location" name="session-location" required />
-                <input type="hidden" id="location-coordinates" name="location-coordinates" />
-                <div id="selected-location-display" class="selected-location" style="margin-top: 8px; font-size: 14px; color: #666; font-style: italic;">
-                  Click on the map to select a location
+                <div class="form-group">
+                  <label for="course-code">Course</label>
+                  <input
+                    type="text"
+                    id="course-code"
+                    name="course-code"
+                    placeholder="e.g., CS 1440 or MATH 1110"
+                    required
+                  />
+                  <small class="help-text"
+                    >Use the course code or course name students will
+                    recognize</small
+                  >
                 </div>
               </div>
+            </div>
 
-              <div class="form-group">
-                <label for="max-participants">Group Size</label>
-                <select id="max-participants" name="max-participants" required>
-                  <option value="">Choose size</option>
-                  <option value="2">2 people</option>
-                  <option value="4">4 people</option>
-                  <option value="6">6 people</option>
-                  <option value="8">8 people</option>
-                  <option value="12">12 people</option>
-                </select>
+            <!-- Session Details -->
+            <div class="form-section">
+              <h4>Session Details</h4>
+              <div class="session-details-grid">
+                <div class="form-group session-detail-title">
+                  <label for="session-title">Study Focus (Optional)</label>
+                  <input
+                    type="text"
+                    id="session-title"
+                    name="session-title"
+                    placeholder="e.g., Exam review or homework help"
+                  />
+                  <small class="help-text"
+                    >Leave blank to use your course as the session title</small
+                  >
+                </div>
+
+                <div class="form-group session-detail-date">
+                  <label for="session-date">Date</label>
+                  <input
+                    type="date"
+                    id="session-date"
+                    name="session-date"
+                    required
+                  />
+                </div>
+
+                <div class="form-group session-detail-time">
+                  <label for="session-time">Time</label>
+                  <input
+                    type="time"
+                    id="session-time"
+                    name="session-time"
+                    required
+                  />
+                </div>
+
+                <div class="form-group session-detail-location">
+                  <label for="session-location">Meeting Location</label>
+                  <div id="campus-map"></div>
+                  <input
+                    type="hidden"
+                    id="session-location"
+                    name="session-location"
+                    required
+                  />
+                  <input
+                    type="hidden"
+                    id="location-coordinates"
+                    name="location-coordinates"
+                  />
+                  <div
+                    id="selected-location-display"
+                    class="selected-location no-selection"
+                  >
+                    Click on the map to select a location
+                  </div>
+                </div>
+
+                <div class="form-group session-detail-size">
+                  <label for="max-participants">Group Size</label>
+                  <select
+                    id="max-participants"
+                    name="max-participants"
+                    required
+                  >
+                    <option value="">Choose size</option>
+                    <option value="2">2 people</option>
+                    <option value="4">4 people</option>
+                    <option value="6">6 people</option>
+                    <option value="8">8 people</option>
+                    <option value="12">12 people</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Comments and Additional Details -->
-          <div class="form-section">
-            <h4>Notes (Optional)</h4>
-            <div class="form-group full-width">
-              <label for="session-description">Anything students should know?</label>
-              <textarea
-                id="session-description"
-                name="session-description"
-                rows="5"
-                placeholder="Add quick context like what you plan to cover, what to bring, or how to find the meeting spot."
-              ></textarea>
-              <small class="help-text"
-                >Optional, but useful if you want to give extra context</small
-              >
+            <!-- Comments and Additional Details -->
+            <div class="form-section">
+              <h4>Notes (Optional)</h4>
+              <div class="form-group full-width">
+                <label for="session-description"
+                  >Anything students should know?</label
+                >
+                <textarea
+                  id="session-description"
+                  name="session-description"
+                  rows="5"
+                  placeholder="Add quick context like what you plan to cover, what to bring, or how to find the meeting spot."
+                ></textarea>
+                <small class="help-text"
+                  >Optional, but useful if you want to give extra context</small
+                >
+              </div>
             </div>
-          </div>
 
-          <!-- Form Actions -->
-          <div class="form-actions">
-            <button type="submit" class="btn-primary">
-              Post Study Session
-            </button>
-          </div>
-        </form>
+            <!-- Form Actions -->
+            <div class="form-actions">
+              <button type="submit" class="btn-primary">
+                Post Study Session
+              </button>
+            </div>
+          </form>
         </div>
       </section>
     </main>
 
     <footer></footer>
+
+    <!-- Chatbot -->
+    <div id="chatbot-button" onclick="toggleChat()">💬</div>
+    <div id="chatbot-container">
+      <div id="chatbot-header">
+        <span>StudyOver Assistant</span>
+        <button onclick="toggleChat()">×</button>
+      </div>
+      <div id="chatbot-messages"></div>
+      <div id="chatbot-input-container">
+        <input
+          type="text"
+          id="chatbot-input"
+          placeholder="Type your message..."
+          onkeypress="handleKeyPress(event)"
+        />
+        <button onclick="sendMessage()">Send</button>
+      </div>
+    </div>
+
+    <script>
+      let chatVisible = localStorage.getItem("chatVisible") === "true";
+      let chatMessages = JSON.parse(
+        localStorage.getItem("chatMessages") || "[]",
+      );
+
+      // Set initial state on page load
+      document.addEventListener("DOMContentLoaded", function () {
+        document.getElementById("chatbot-container").style.display = chatVisible
+          ? "block"
+          : "none";
+        // Load saved messages
+        loadMessages();
+      });
+
+      function loadMessages() {
+        const messagesDiv = document.getElementById("chatbot-messages");
+        messagesDiv.innerHTML = ""; // Clear existing
+        chatMessages.forEach((msg) => {
+          addMessage(msg.sender, msg.message, false); // Don't save again
+        });
+      }
+
+      function saveMessages() {
+        localStorage.setItem("chatMessages", JSON.stringify(chatMessages));
+      }
+
+      function toggleChat() {
+        chatVisible = !chatVisible;
+        localStorage.setItem("chatVisible", chatVisible);
+        document.getElementById("chatbot-container").style.display = chatVisible
+          ? "block"
+          : "none";
+        if (
+          chatVisible &&
+          document.getElementById("chatbot-messages").children.length === 0
+        ) {
+          addMessage(
+            "AI",
+            "Welcome to StudyOver! How can I help you with creating or finding study sessions today?",
+            true,
+          );
+        }
+      }
+
+      function addMessage(sender, message, shouldSave = true) {
+        const messagesDiv = document.getElementById("chatbot-messages");
+        const messageDiv = document.createElement("div");
+        messageDiv.className =
+          "chatbot-message " + (sender === "You" ? "user" : "ai");
+        messageDiv.innerHTML = "<strong>" + sender + ":</strong> " + message;
+        messagesDiv.appendChild(messageDiv);
+        messagesDiv.scrollTop = messagesDiv.scrollHeight;
+
+        if (shouldSave) {
+          chatMessages.push({ sender, message });
+          saveMessages();
+        }
+      }
+
+      function sendMessage() {
+        const input = document.getElementById("chatbot-input");
+        const message = input.value.trim();
+        if (message) {
+          addMessage("You", message);
+          input.value = "";
+
+          fetch("/api/chat", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ message: message }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              addMessage("AI", data.response);
+            })
+            .catch((error) => {
+              addMessage("AI", "Sorry, I'm having trouble. Please try again.");
+            });
+        }
+      }
+
+      function handleKeyPress(event) {
+        if (event.key === "Enter") {
+          sendMessage();
+        }
+      }
+    </script>
   </body>
 </html>

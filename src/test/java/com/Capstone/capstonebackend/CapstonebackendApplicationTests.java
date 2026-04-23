@@ -8,14 +8,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.mock.web.MockHttpSession;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "spring.datasource.url=jdbc:h2:mem:capstone-test;DB_CLOSE_DELAY=-1",
+        "spring.jpa.hibernate.ddl-auto=create-drop"
+})
 class CapstonebackendApplicationTests {
 
     @Autowired
     private HomeController homeController;
 
     @Autowired
-    private InMemoryAuthService authService;
+    private AuthService authService;
+
+    @Autowired
+    private UserAccountRepository userAccountRepository;
 
     @Test
     void loginRedirectsToDashboardWhenStudentCredentialsMatch() {
@@ -34,13 +40,13 @@ class CapstonebackendApplicationTests {
     void seededAdminCanLogIn() {
         MockHttpSession session = new MockHttpSession();
         String redirect = homeController.login(
-                InMemoryAuthService.DEFAULT_ADMIN_USERNAME,
-                InMemoryAuthService.DEFAULT_ADMIN_PASSWORD,
+                AuthService.DEFAULT_ADMIN_USERNAME,
+                AuthService.DEFAULT_ADMIN_PASSWORD,
                 session);
 
         assertThat(redirect).isEqualTo("redirect:/SO_DashBoard.html");
         assertThat(session.getAttribute("authenticated")).isEqualTo(true);
-        assertThat(session.getAttribute("userEmail")).isEqualTo(InMemoryAuthService.DEFAULT_ADMIN_USERNAME);
+        assertThat(session.getAttribute("userEmail")).isEqualTo(AuthService.DEFAULT_ADMIN_USERNAME);
         assertThat(session.getAttribute("userRole")).isEqualTo("admin");
     }
 
@@ -88,6 +94,63 @@ class CapstonebackendApplicationTests {
                 "mountaineers");
 
         assertThat(redirect).isEqualTo("redirect:/SO_SignUpPage.html?error=exists");
+    }
+
+    @Test
+    void adminCanCreateStudentAccountInDatabase() {
+        CreateUserAccountRequest request = new CreateUserAccountRequest();
+        request.setRole("student");
+        request.setUsername("managed-student@appstate.edu");
+        request.setPassword("created-password");
+
+        MockHttpSession adminSession = new MockHttpSession();
+        adminSession.setAttribute("userRole", "admin");
+
+        var response = homeController.createUserAccount(request, adminSession);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        UserAccount savedAccount = userAccountRepository
+                .findByNormalizedUsername("managed-student@appstate.edu")
+                .orElseThrow();
+        assertThat(savedAccount.getUsername()).isEqualTo("managed-student@appstate.edu");
+        assertThat(savedAccount.getRole()).isEqualTo("student");
+        assertThat(savedAccount.getPasswordHash()).isNotEqualTo("created-password");
+
+        MockHttpSession loginSession = new MockHttpSession();
+        String loginRedirect = homeController.login(
+                "managed-student@appstate.edu",
+                "created-password",
+                loginSession);
+        assertThat(loginRedirect).isEqualTo("redirect:/SO_DashBoard.html");
+        assertThat(loginSession.getAttribute("userRole")).isEqualTo("student");
+    }
+
+    @Test
+    void adminCanCreateAdminAccountInDatabase() {
+        CreateUserAccountRequest request = new CreateUserAccountRequest();
+        request.setRole("admin");
+        request.setUsername("managed-admin");
+        request.setPassword("admin-password");
+
+        MockHttpSession adminSession = new MockHttpSession();
+        adminSession.setAttribute("userRole", "admin");
+
+        var response = homeController.createUserAccount(request, adminSession);
+
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.CREATED);
+
+        UserAccount savedAccount = userAccountRepository
+                .findByNormalizedUsername("managed-admin")
+                .orElseThrow();
+        assertThat(savedAccount.getUsername()).isEqualTo("managed-admin");
+        assertThat(savedAccount.getRole()).isEqualTo("admin");
+        assertThat(savedAccount.getPasswordHash()).isNotEqualTo("admin-password");
+
+        MockHttpSession loginSession = new MockHttpSession();
+        String loginRedirect = homeController.login("managed-admin", "admin-password", loginSession);
+        assertThat(loginRedirect).isEqualTo("redirect:/SO_DashBoard.html");
+        assertThat(loginSession.getAttribute("userRole")).isEqualTo("admin");
     }
 
     @Test
